@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/router";
+import { useRouter } from 'next/compat/router';
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -19,7 +19,7 @@ const Register = () => {
       body: JSON.stringify({ email, password }),
     });
 
-    if (res.ok) router.push("/login");
+    if (res.ok) router?.push("/auth/login");
     else console.error("Failed to register");
   };
 

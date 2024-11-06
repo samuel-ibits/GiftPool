@@ -5,8 +5,8 @@ import TwitterProvider from "next-auth/providers/twitter";
 import FacebookProvider from "next-auth/providers/facebook";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
-import clientPromise from "../../lib/mongodb";
-import bcrypt from "bcrypt";
+import clientPromise from "../../../lib/mongodb";
+import bcrypt from "bcryptjs";
 
 // Define your NextAuth configuration
 const authOptions = {
@@ -51,12 +51,11 @@ const authOptions = {
     adapter: MongoDBAdapter(clientPromise),
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
-        async session({ session, user }: {
-            session: Session | string; user: User
-        }) {
-            session.userId = user.id; // Access the user ID
-            return session;
-        },
+        // async session({ session, user
+        // }: { session: any, user: any }) {
+        //     session.userId = user.id; // Access the user ID
+        //     return session;
+        // },
     },
 };
 

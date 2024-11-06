@@ -2,7 +2,7 @@
 'use client'
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/router";
+import { useRouter } from 'next/compat/router';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -18,7 +18,7 @@ const Login = () => {
     });
 
     if (res?.ok) {
-      router.push("/");
+      router?.push("/");
     } else {
       console.error("Failed to login");
     }
@@ -71,7 +71,7 @@ const Login = () => {
           </button>
         </div>
         <p className="text-center text-gray-600 mt-4">
-          New to GiftPool? <a href="/register" className="text-purple-600 hover:underline">Sign Up</a>
+          New to GiftPool? <a href="/auth/register" className="text-purple-600 hover:underline">Sign Up</a>
         </p>
       </div>
     </div>
