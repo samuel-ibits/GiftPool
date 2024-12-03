@@ -38,39 +38,35 @@ const Pricing = () => {
                 popular
               </div>   
               <h3 className="mb-7.5 text-3xl font-bold text-black dark:text-white xl:text-sectiontitle3">
-              &#8358; 1.5% + &#8358;100 {" "}
+              1%  + &#8358;100 {" "}
                 <span className="text-regular text-waterloo dark:text-manatee">
                   /Transaction
                 </span>
+                
               </h3>
               <h4 className="mb-2.5 text-para2 font-medium text-black dark:text-white">
                 Standard
               </h4>
-              <p>Everything You Need to Get Started.</p>
+              <p></p>
 
-              {/* <div className="mt-9 border-t border-stroke pb-12.5 pt-9 dark:border-strokedark">
+              <div className="mt-9 border-t border-stroke pb-12.5 pt-9 dark:border-strokedark">
                 <ul>
                   <li className="mb-4 text-black last:mb-0 dark:text-manatee">
-                    300 GB Storage
+                  Everything You Need to Get Started.
                   </li>
-                  <li className="mb-4 text-black last:mb-0 dark:text-manatee">
-                    Unlimited Photos and Videos
-                  </li>
+                 
                   <li className="mb-4 text-black opacity-40 last:mb-0 dark:text-manatee">
-                    Exclusive Support
-                  </li>
-                  <li className="mb-4 text-black opacity-40 last:mb-0 dark:text-manatee">
-                    Custom Branding Strategy
+                  Transfer method tarrif apply
                   </li>
                 </ul>
-              </div> */}
+              </div>
 
               <button
                 aria-label="Get the Plan button"
                 className="group/btn inline-flex items-center gap-2.5 font-medium text-primary transition-all duration-300 dark:text-white dark:hover:text-primary"
               >
                 <span className="duration-300 group-hover/btn:pr-2">
-                  Get the Plan
+                  Get Started Now.
                 </span>
                 <svg
                   width="14"
@@ -84,6 +80,7 @@ const Pricing = () => {
                   />
                 </svg>
               </button>
+            
             </div>
 
             {/* <!-- Pricing Item --> */}
@@ -98,22 +95,20 @@ const Pricing = () => {
               </h4>
               <p>Tailored Solutions for Unique Needs</p>
 
-              {/* <div className="mt-9 border-t border-stroke pb-12.5 pt-9 dark:border-strokedark">
+              <div className="mt-9 border-t border-stroke pb-12.5 pt-9 dark:border-strokedark">
                 <ul>
                   <li className="mb-4 text-black last:mb-0 dark:text-manatee">
-                    300 GB Storage
+                    Setup Specific Conditions for your Give-away
                   </li>
                   <li className="mb-4 text-black last:mb-0 dark:text-manatee">
-                    Unlimited Photos and Videos
+                    Demographic Targeting
                   </li>
                   <li className="mb-4 text-black last:mb-0 dark:text-manatee">
                     Exclusive Support
                   </li>
-                  <li className="mb-4 text-black opacity-40 last:mb-0 dark:text-manatee">
-                    Custom Branding Strategy
-                  </li>
+                 
                 </ul>
-              </div> */}
+              </div>
             <a href="/#support">
               <button
                 aria-label="Get the Plan button"
