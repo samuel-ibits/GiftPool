@@ -6,8 +6,8 @@ export default function GiftingStepper() {
   const [imagePreview, setImagePreview] = useState('');
   const [duration, setDuration] = useState('');
   const [dispenseOption, setDispenseOption] = useState('immediately');
-  const [giftAmount, setGiftAmount] = useState(0);
-  const [splits, setSplits] = useState(1);
+  const [giftAmount, setGiftAmount] = useState<number | null>(null);
+  const [splits, setSplits] = useState<number | null>(null);
   const [giftLink, 
     // setGiftLink
 ] = useState('https://giftingapp.com/your-link');
@@ -76,7 +76,7 @@ export default function GiftingStepper() {
         type="number"
         className="flex-1 h-12 px-4 border rounded-md"
         placeholder="Enter gift amount"
-        value={giftAmount}
+        value={giftAmount !== null ? giftAmount : ""}
         onChange={(e) => setGiftAmount(Number(e.target.value))}
       />
       <button className="bg-green-600 text-white px-6 py-2 rounded-md">
@@ -89,7 +89,7 @@ export default function GiftingStepper() {
         type="number"
         className="w-full h-12 px-4 border rounded-md"
         placeholder="Enter number of participants"
-        value={splits}
+        value={splits !== null ? splits : ""}
         onChange={(e) => setSplits(Number(e.target.value))}
       />
     </div>
