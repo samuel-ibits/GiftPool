@@ -182,7 +182,7 @@ const Contact = () => {
                 <h3 className="mb-4 text-metatitle3 font-medium text-black dark:text-white">
                   Our Location
                 </h3>
-                <p> Gwagwalada, Abuja.</p>
+                <p> Gwagwalada, Abuja, Nigeria.</p>
               </div>
               <div className="5 mb-7">
                 <h3 className="mb-4 text-metatitle3 font-medium text-black dark:text-white">

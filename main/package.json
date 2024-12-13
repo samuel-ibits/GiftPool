@@ -1,6 +1,6 @@
 {
-  "name": "solid-nextjs",
-  "version": "0.2.0",
+  "name": "giftpool-nextjs",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
