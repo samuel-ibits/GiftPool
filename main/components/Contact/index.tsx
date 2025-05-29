@@ -1,13 +1,16 @@
 "use client";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import React from "react";
+import React, {useState} from "react";
 
 const Contact = () => {
-  /**
-   * Source: https://www.joshwcomeau.com/react/the-perils-of-rehydration/
-   * Reason: To fix rehydration error
-   */
+  const [formData, setFormData] = useState({ name: '', email: '', message: '', subject: '', phonenumber: '', });
+  const [status, setStatus] = useState('');
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
   const [hasMounted, setHasMounted] = React.useState(false);
   React.useEffect(() => {
     setHasMounted(true);
@@ -15,6 +18,27 @@ const Contact = () => {
   if (!hasMounted) {
     return null;
   }
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('Sending...');
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      if (response.ok) {
+        setStatus('Message sent successfully!');
+        setFormData({ name: '', email: '', message: '', subject: '', phonenumber: '', });
+      } else {
+        setStatus('Failed to send message.');
+      }
+    } catch (error) {
+      setStatus('An error occurred.');
+    }
+  };
 
   return (
     <>
@@ -60,19 +84,24 @@ const Contact = () => {
                 Send a message
               </h2>
 
-              <form
-                action="https://formbold.com/s/unique_form_id"
-                method="POST"
-              >
+              <form  onSubmit={handleSubmit} >
                 <div className="mb-7.5 flex flex-col gap-7.5 lg:flex-row lg:justify-between lg:gap-14">
                   <input
                     type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
                     placeholder="Full name"
                     className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
                   />
 
                   <input
                     type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     placeholder="Email address"
                     className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
                   />
@@ -81,12 +110,20 @@ const Contact = () => {
                 <div className="mb-12.5 flex flex-col gap-7.5 lg:flex-row lg:justify-between lg:gap-14">
                   <input
                     type="text"
+                    id="subject"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
                     placeholder="Subject"
                     className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
                   />
 
                   <input
                     type="text"
+                    id="phonenumber"
+                    name="phonenumber"
+                    value={formData.phonenumber}
+                    onChange={handleChange}
                     placeholder="Phone number"
                     className="w-full border-b border-stroke bg-transparent pb-3.5 focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white lg:w-1/2"
                   />
@@ -96,6 +133,10 @@ const Contact = () => {
                   <textarea
                     placeholder="Message"
                     rows={4}
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
                     className="w-full border-b border-stroke bg-transparent focus:border-waterloo focus:placeholder:text-black focus-visible:outline-none dark:border-strokedark dark:focus:border-manatee dark:focus:placeholder:text-white"
                   ></textarea>
                 </div>
@@ -134,6 +175,7 @@ const Contact = () => {
                   </div>
 
                   <button
+                  type="submit"
                     aria-label="send message"
                     className="inline-flex items-center gap-2.5 rounded-full bg-black px-6 py-3 font-medium text-white duration-300 ease-in-out hover:bg-blackho dark:bg-btndark"
                   >
