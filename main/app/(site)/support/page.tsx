@@ -3,8 +3,10 @@ import Contact from "@/components/Contact";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Support Page - Solid SaaS Boilerplate",
-  description: "This is Support page for Solid Pro",
+  title: "Support Page - GiftPool",
+  keywords: ["support", "contact", "help", "GiftPool"],
+  authors: [{ name: "GiftPool Team", url: "https://giftpool.live" }],
+  description: "This is Support page for GiftPool, where you can find help and contact us for any issues or inquiries.",
   // other metadata
 };
 

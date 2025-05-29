@@ -4,7 +4,7 @@ import Image from "next/image";
 import React, {useState} from "react";
 
 const Contact = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '', subject: '', phonenumber: '', });
+  const [formData, setFormData] = useState({ name: '', email: '', message: '', subject: '', phonenumber: '', source: 'landing',});
   const [status, setStatus] = useState('');
 
   const handleChange = (e) => {
@@ -31,7 +31,7 @@ const Contact = () => {
       });
       if (response.ok) {
         setStatus('Message sent successfully!');
-        setFormData({ name: '', email: '', message: '', subject: '', phonenumber: '', });
+        setFormData({ name: '', email: '', message: '', subject: '', phonenumber: '',source: 'landing', });
       } else {
         setStatus('Failed to send message.');
       }

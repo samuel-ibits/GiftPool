@@ -4,7 +4,7 @@ import { Contact } from '@/models/contact';
 import { sendContactMail } from '@/utils/mailer';
 
 export async function POST(request) {
-  const { name, email, message, source = 'other' } = await request.json();
+  const { name, email, message, source = 'other',subject, phonenumber } = await request.json();
 
   if (!name || !email || !message) {
     return NextResponse.json({ error: 'All fields are required.' }, { status: 400 });
@@ -14,10 +14,10 @@ export async function POST(request) {
     await connectToDatabase();
 
     // Save contact with source info
-    await Contact.create({ name, email, message, source });
+    await Contact.create({ name, email, message, source,subject, phonenumber });
 
     // Send email
-    const emailResult = await sendContactMail({ to: email, name, message });
+    const emailResult = await sendContactMail({ to: email, name, message:subject });
 
     return NextResponse.json({
       message: 'Success! Message received and email sent.',
