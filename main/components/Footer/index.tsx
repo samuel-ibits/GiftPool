@@ -1,8 +1,35 @@
 "use client";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import React, {useState} from "react";
 
 const Footer = () => {
+   const [formData, setFormData] = useState({ email: '' });
+    const [status, setStatus] = useState('');
+  
+    const handleChange = (e) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('Sending...');
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      if (response.ok) {
+        setStatus('Message sent successfully!');
+        setFormData({ email: '',  });
+      } else {
+        setStatus('Failed to send message.');
+      }
+    } catch (error) {
+      setStatus('An error occurred.');
+    }
+  };
   return (
     <>
       <footer className="border-t border-stroke bg-white dark:border-strokedark dark:bg-blacksection">
@@ -56,7 +83,7 @@ const Footer = () => {
                   href="#"
                   className="text-itemtitle font-medium text-black dark:text-white"
                 >
-                  hello@giftpool.com
+                  hello@giftpool.live
                 </a>
               </motion.div>
 
@@ -202,15 +229,19 @@ const Footer = () => {
                     Subscribe to receive future updates
                   </p>
 
-                  <form action="#">
+                  <form onSubmit={handleSubmit}>
                     <div className="relative">
                       <input
                         type="text"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
                         placeholder="Email address"
                         className="w-full rounded-full border border-stroke px-6 py-3 shadow-solid-11 focus:border-primary focus:outline-none dark:border-strokedark dark:bg-black dark:shadow-none dark:focus:border-primary"
                       />
 
                       <button
+                        type="submit"
                         aria-label="signup to newsletter"
                         className="absolute right-0 p-4"
                       >

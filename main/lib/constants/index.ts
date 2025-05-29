@@ -1,0 +1,1 @@
+export const UNSUBSCRIBE_URL = `${process.env.APP_URL}/unsubscribe`;

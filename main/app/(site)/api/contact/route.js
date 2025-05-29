@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongoose';
 import { Contact } from '@/models/contact';
-import { sendContactMail } from '@/utils/mailer';
+import Newsletter from '@/models/newsletter';
+import { sendContactMail,sendNewsletterMail } from '@/utils/mailer';
 
 export async function POST(request) {
-  const { name, email, message, source = 'other',subject, phonenumber } = await request.json();
+  const { name, email, message, source = 'other',subject, phonenumber, newsletter } = await request.json();
 
   if (!name || !email || !message) {
     return NextResponse.json({ error: 'All fields are required.' }, { status: 400 });
@@ -18,6 +19,13 @@ export async function POST(request) {
 
     // Send email
     const emailResult = await sendContactMail({ to: email, name, message:subject });
+    if (newsletter) {
+      // Add email to newsletter list
+      await Newsletter.create(
+        { email }
+      );
+      await sendNewsletterMail({ to: email, name });
+    }
 
     return NextResponse.json({
       message: 'Success! Message received and email sent.',

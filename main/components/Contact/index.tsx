@@ -4,7 +4,7 @@ import Image from "next/image";
 import React, {useState} from "react";
 
 const Contact = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '', subject: '', phonenumber: '', source: 'landing',});
+  const [formData, setFormData] = useState({ name: '', email: '', message: '', subject: '', phonenumber: '', source: 'landing', newsletter: false });
   const [status, setStatus] = useState('');
 
   const handleChange = (e) => {
@@ -31,7 +31,7 @@ const Contact = () => {
       });
       if (response.ok) {
         setStatus('Message sent successfully!');
-        setFormData({ name: '', email: '', message: '', subject: '', phonenumber: '',source: 'landing', });
+        setFormData({ name: '', email: '', message: '', subject: '', phonenumber: '',source: 'landing', newsletter: false });
       } else {
         setStatus('Failed to send message.');
       }
@@ -143,11 +143,20 @@ const Contact = () => {
 
                 <div className="flex flex-wrap gap-4 xl:justify-between ">
                   <div className="mb-4 flex md:mb-0">
-                    <input
+                  <input
+                      name="newsletter"
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          newsletter: e.target.checked,
+                        }))
+                      }
+                      checked={formData.newsletter || false}
                       id="default-checkbox"
                       type="checkbox"
                       className="peer sr-only"
                     />
+
                     <span className="border-gray-300 bg-gray-100 text-blue-600 dark:border-gray-600 dark:bg-gray-700 group mt-2 flex h-5 min-w-[20px] items-center justify-center rounded peer-checked:bg-primary">
                       <svg
                         className="opacity-0 peer-checked:group-[]:opacity-100"
@@ -169,8 +178,7 @@ const Contact = () => {
                       htmlFor="default-checkbox"
                       className="flex max-w-[425px] cursor-pointer select-none pl-5"
                     >
-                      By clicking Checkbox, you agree to use our “Form” terms
-                      And consent cookie usage in browser.
+                      Subscribe to our Newsletter and stay up to date with our latest products.
                     </label>
                   </div>
 
@@ -231,7 +239,7 @@ const Contact = () => {
                   Email Address
                 </h3>
                 <p>
-                  <a href="#">support@giftpool.com</a>
+                  <a href="#">support@giftpool.live</a>
                 </p>
               </div>
               <div>
