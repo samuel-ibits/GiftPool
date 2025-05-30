@@ -11,7 +11,7 @@ export async function POST(request) {
     return NextResponse.json({ error: 'All fields are required.' }, { status: 400 });
   }
 
-  try {
+  try { 
     await connectToDatabase();
 
     // Save contact with source info
