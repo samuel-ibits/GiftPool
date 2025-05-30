@@ -6,10 +6,10 @@ import Lines from "@/components/Lines";
 import ScrollToTop from "@/components/ScrollToTop";
 import { ThemeProvider } from "next-themes";
 import { Inter } from "next/font/google";
-import "../globals.css";
+import "../../globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
-import ToasterContext from "../context/ToastContext";
+import ToasterContext from "../../context/ToastContext";
 
 export default function RootLayout({
   children,
@@ -25,10 +25,10 @@ export default function RootLayout({
           defaultTheme="light"
         >
           <Lines />
-          <Header />
+          {/* <Header /> */}
           <ToasterContext />
           {children}
-          <Footer />
+          {/* <Footer /> */}
           <ScrollToTop />
         </ThemeProvider>
       </body>

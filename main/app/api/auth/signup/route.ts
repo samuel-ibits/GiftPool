@@ -8,7 +8,7 @@ import { connectToDatabase } from '@/lib/mongoose';
 import { User } from "@/models/user";
 
 const schema = z.object({
-  phoneNumber: z.string().min(10),
+  phoneNumber: z.string().min(10).optional(),
   email: z.string().email(),
   password: z.string().min(8),
 });
