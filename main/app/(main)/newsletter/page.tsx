@@ -1,7 +1,5 @@
-import { useState } from 'react';
-
 'use client';
-
+import { useState } from 'react';
 
 const NewsletterPage = () => {
     const [email, setEmail] = useState('');

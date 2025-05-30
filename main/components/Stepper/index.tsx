@@ -43,26 +43,28 @@ export default function GiftingStepper() {
   return (
     <div className="max-w-4xl mx-auto p-6">
       {/* Stepper Header */}
-      <ol className="flex items-center justify-between mb-8">
+      <ol className="flex flex-col sm:flex-row items-center justify-between mb-8 space-y-4 sm:space-y-0">
         {steps.map((step, index) => (
-          <li
+            <li
             key={step.id}
             onClick={() => setCurrentStep(step.id)}
-            className={`flex-1 flex items-center cursor-pointer ${
+            className={`flex items-center cursor-pointer ${
               index + 1 <= currentStep ? 'text-indigo-600' : 'text-gray-400'
             }`}
-          >
+            >
             <span
               className={`w-8 h-8 flex items-center justify-center rounded-full border-2 ${
-                index + 1 <= currentStep
-                  ? 'bg-indigo-600 text-white border-indigo-600'
-                  : 'border-gray-300'
+              index + 1 <= currentStep
+                ? 'bg-indigo-600 text-white border-indigo-600'
+                : 'border-gray-300'
               }`}
             >
               {index + 1}
             </span>
-            <span className="ml-3">{step.title}</span>
-          </li>
+            <span className="ml-3 text-xs sm:text-sm md:text-base">
+              {step.title}
+            </span>
+            </li>
         ))}
       </ol>
 
@@ -71,16 +73,16 @@ export default function GiftingStepper() {
       {currentStep === 1 && (
   <div>
     <h2 className="text-xl font-semibold mb-4">Gift Amount</h2>
-    <div className="flex items-center space-x-4">
+    <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
       <input
-        type="number"
-        className="flex-1 h-12 px-4 border rounded-md"
-        placeholder="Enter gift amount"
-        value={giftAmount !== null ? giftAmount : ""}
-        onChange={(e) => setGiftAmount(Number(e.target.value))}
+      type="number"
+      className=" w-full h-12 px-4 border rounded-md"
+      placeholder="Enter gift amount"
+      value={giftAmount !== null ? giftAmount : ""}
+      onChange={(e) => setGiftAmount(Number(e.target.value))}
       />
-      <button className="bg-green-600 text-white px-6 py-2 rounded-md">
-        Pay Now
+      <button className="bg-green-600 text-white px-6 py-2 rounded-md w-full sm:w-auto">
+      Pay Now
       </button>
     </div>
     <div className="mt-4">
@@ -207,58 +209,58 @@ export default function GiftingStepper() {
       <p className="text-sm text-gray-600">
         Share your gift link with friends and family:
       </p>
-      <div className="flex items-center mt-4 space-x-2">
+      <div className="flex flex-col sm:flex-row items-center mt-4 space-y-2 sm:space-y-0 sm:space-x-2">
         <input
           type="text"
-          className="flex-1 h-12 px-4 border rounded-md"
+          className=" h-12 px-4 border rounded-md w-full"
           value={giftLink}
           readOnly
         />
         <button
           onClick={() => {
-            navigator.clipboard.writeText(giftLink);
-            setCopied(true); // Update feedback
-            setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
+        navigator.clipboard.writeText(giftLink);
+        setCopied(true); // Update feedback
+        setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
           }}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-md"
+          className="bg-indigo-600 text-white px-4 py-2 rounded-md w-full sm:w-auto"
         >
           {copied ? "Copied!" : "Copy Link"}
         </button>
       </div>
       {copied && <p className="text-green-600 mt-2">Link copied to clipboard!</p>}
     </div>
-    <div className="flex space-x-4 mt-6">
+    <div className="flex flex-wrap justify-center space-x-4 mt-6 sm:space-x-4 sm:justify-start">
       <a
-        href="https://facebook.com"
-        className="text-blue-600 hover:underline"
-        target="_blank"
-        rel="noopener noreferrer"
+      href="https://facebook.com"
+      className="text-blue-600 hover:underline mb-2 sm:mb-0"
+      target="_blank"
+      rel="noopener noreferrer"
       >
-        Facebook
+      Facebook
       </a>
       <a
-        href="https://twitter.com"
-        className="text-blue-400 hover:underline"
-        target="_blank"
-        rel="noopener noreferrer"
+      href="https://twitter.com"
+      className="text-blue-400 hover:underline mb-2 sm:mb-0"
+      target="_blank"
+      rel="noopener noreferrer"
       >
-        Twitter
+      Twitter
       </a>
       <a
-        href="https://instagram.com"
-        className="text-pink-600 hover:underline"
-        target="_blank"
-        rel="noopener noreferrer"
+      href="https://instagram.com"
+      className="text-pink-600 hover:underline mb-2 sm:mb-0"
+      target="_blank"
+      rel="noopener noreferrer"
       >
-        Instagram
+      Instagram
       </a>
       <a
-        href="https://linkedin.com"
-        className="text-blue-700 hover:underline"
-        target="_blank"
-        rel="noopener noreferrer"
+      href="https://linkedin.com"
+      className="text-blue-700 hover:underline mb-2 sm:mb-0"
+      target="_blank"
+      rel="noopener noreferrer"
       >
-        LinkedIn
+      LinkedIn
       </a>
     </div>
   </div>
