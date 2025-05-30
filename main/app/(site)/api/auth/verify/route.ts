@@ -4,7 +4,7 @@ import { verifyOtpAndGenerateToken } from "@/lib/otp";
 import type { VerifiedAdmin } from "@/types/auth";
 import { sendWelcomeEmail } from "@/lib/mailer";
 import { connectToDatabase } from '@/lib/mongoose';
-import { Profile } from "@/models/Profile";
+import { Profile } from "@/models/profile";
 
 export async function POST(req: Request) {
   const { otp } = await req.json();

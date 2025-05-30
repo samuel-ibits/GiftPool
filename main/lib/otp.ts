@@ -1,7 +1,7 @@
 // lib/otp.ts
 
-import dbConnect from "@/lib/db";
-import { User } from "./models/User";
+import { connectToDatabase } from '@/lib/mongoose';
+import { User } from "@/models/user";
 import { signAccessToken, signRefreshToken } from "./jwt";
 
 export function generateOtp(): string {
@@ -9,7 +9,7 @@ export function generateOtp(): string {
 }
 
 export async function verifyOtpAndGenerateToken(otp: string) {
-  await dbConnect();
+  await connectToDatabase();
   const user = await User.findOne({ verificationCode: otp });
 
   if (!user) throw new Error("Invalid or expired OTP");

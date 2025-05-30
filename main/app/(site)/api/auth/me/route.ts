@@ -1,4 +1,4 @@
-import { Profile } from "@/models/Profile";
+import { Profile } from "@/models/profile";
 import { connectToDatabase } from '@/lib/mongoose';
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/middleware/requireAuth";

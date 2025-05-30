@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 
 export async function sendVerificationEmail(to: string, code: string) {
   const mailOptions = {
-    from: `"Ticket App" <${process.env.EMAIL_USER}>`,
+    from: `"GiftPool App" <${process.env.EMAIL_USER}>`,
     to,
     subject: "Verify Your Email",
     html: `
@@ -31,7 +31,7 @@ export async function sendVerificationEmail(to: string, code: string) {
 
 export async function sendWelcomeEmail(to: string) {
   const mailOptions = {
-    from: `"Ticket App" <${process.env.EMAIL_USER}>`,
+    from: `"GiftPool App" <${process.env.EMAIL_USER}>`,
     to,
     subject: "Welcome to Our Platform",
     html: `<p>Hey,</p><p>Welcome aboard! We're excited to have you.</p>`,
@@ -42,7 +42,7 @@ export async function sendWelcomeEmail(to: string) {
 
 export async function resendOtpEmail(to: string, otp: string): Promise<void> {
   const mailOptions = {
-    from: `"Ticket App" <${process.env.EMAIL_USER}>`,
+    from: `"GiftPool App" <${process.env.EMAIL_USER}>`,
     to,
     subject: "Your OTP Verification Code",
     html: `
@@ -59,7 +59,7 @@ export async function resendOtpEmail(to: string, otp: string): Promise<void> {
 }
 
 
-export const sendTicketMail = async ({
+export const sendGiftPoolMail = async ({
   to,
   subject,
   html,
@@ -72,17 +72,17 @@ export const sendTicketMail = async ({
 }) => {
   try {
     const info = await transporter.sendMail({
-      from: `"Ticket App" <${process.env.EMAIL_USER}>`,
+      from: `"GiftPool App" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html,
       attachments,
     });
 
-    console.log("Ticket mail sent:", info.messageId);
+    console.log("GiftPool mail sent:", info.messageId);
     return info;
   } catch (error) {
-    console.error("Error sending ticket mail:", error);
+    console.error("Error sending GiftPool mail:", error);
     throw error;
   }
 };
@@ -98,7 +98,7 @@ export const sendFailureMail = async ({
 }) => {
   try {
     const info = await transporter.sendMail({
-      from: `"Ticket App" <${process.env.EMAIL_USER}>`,
+      from: `"GiftPool App" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html,
