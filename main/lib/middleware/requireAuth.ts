@@ -1,4 +1,4 @@
-import { verifyAccessToken } from "@/lib/jwt";
+import { verifyAccessToken } from "../jwt";
 import { NextRequest } from "next/server";
 
 export function requireAuth(req: NextRequest) {

@@ -1,9 +1,33 @@
 // lib/utils.ts
 
-import { User } from "@/models/user";
+import { User } from "../lib/models/User";
+
 import crypto from "crypto";
 import PDFDocument from "pdfkit";
+import moment from "moment-timezone";
 
+export async function currentTime(date: number) {
+  moment(date).tz("America/New_York").format();
+};
+
+export async function splitFullName(fullName: string | null): Promise<{ firstName: string; lastName: string }> {
+  if (!fullName) {
+    return { firstName: "", lastName: "" };
+  }
+  const names = fullName.trim().split(/\s+/);
+  if (names.length === 0) {
+    return { firstName: "", lastName: "" };
+  }
+  if (names.length === 1) {
+    return { firstName: names[0], lastName: "" };
+  }
+  const firstName = names[0];
+  const lastName = names.slice(1).join(" ");
+  return {
+    firstName,
+    lastName,
+  };
+};
 
 export async function generateUsername(joinedAt: Date): Promise<string> {
   // Use the last 6 digits of the timestamp
@@ -30,6 +54,19 @@ export function generateTicketKey() {
   return crypto.randomBytes(20).toString("hex");
 }
 
+export async function getUserFromUuid(uuid: string) {
+  const user = await User.findOne({
+    uuid
+  });
+  return user;
+}
+
+export async function getUserFromUserid(userId: string) {
+  const user = await User.findOne({
+    _id: userId
+  });
+  return user;
+}
 export function generateKey(): string {
   const chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -39,9 +76,6 @@ export function generateKey(): string {
   }
   return key;
 }
-
-
-
 
 interface TicketOrder {
   ticketTitle: string;
@@ -56,24 +90,26 @@ export const generateTicketPDF = (order: TicketOrder): Promise<Buffer> => {
     const doc = new PDFDocument();
     const buffers: Uint8Array[] = [];
 
-    doc.on('data', buffers.push.bind(buffers));
-    doc.on('end', () => {
+    doc.on("data", buffers.push.bind(buffers));
+    doc.on("end", () => {
       const pdfBuffer = Buffer.concat(buffers);
       resolve(pdfBuffer);
     });
 
-    doc.fontSize(18).text(`Ticket for ${order.ticketTitle}`, { align: 'center' });
+    doc
+      .fontSize(18)
+      .text(`Ticket for ${order.ticketTitle}`, { align: "center" });
     doc.moveDown();
     doc.fontSize(14).text(`Name: ${order.customerName}`);
     doc.text(`Email: ${order.email}`);
     doc.text(`Ticket ID: ${order.ticketId}`);
-    doc.moveDown().text('Show this ticket at the gate.', { align: 'center' });
+    doc.moveDown().text("Show this ticket at the gate.", { align: "center" });
 
     if (order.qrCodePath) {
       doc.image(order.qrCodePath, {
         fit: [250, 250],
-        align: 'center',
-        valign: 'center'
+        align: "center",
+        valign: "center",
       });
     }
 
@@ -81,5 +117,21 @@ export const generateTicketPDF = (order: TicketOrder): Promise<Buffer> => {
   });
 };
 
+// Utility function to generate 3 slug suggestions
+export function generateSlugSuggestions(baseSlug: string) {
+  const suffix = () => Math.random().toString(36).substring(2, 5); // random 3-letter suffix
+  return [
+    `${baseSlug}-${suffix()}`,
+    `${baseSlug}-${suffix()}`,
+    `${baseSlug}-${suffix()}`,
+  ];
+}
 
-
+export function rand(length = 6) {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}

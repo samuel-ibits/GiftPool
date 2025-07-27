@@ -3,12 +3,12 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import bcrypt from "bcrypt";
 import { sendVerificationEmail } from "@/lib/mailer";
-import { generateUsername, generateVerificationCode } from "@/lib/utils";
-import { connectToDatabase } from '@/lib/mongoose';
-import { User } from "@/models/user";
+import { generateUsername, generateVerificationCode, splitFullName } from "@/lib/utils";
+import connectDB from "@/lib/db";
+import { User } from "@/lib/models/User";
 
 const schema = z.object({
-  phoneNumber: z.string().min(10).optional(),
+  fullName: z.string().min(1).optional(),
   email: z.string().email(),
   password: z.string().min(8),
 });
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const parsed = schema.safeParse(body);
-    await connectToDatabase();
+    await connectDB();
 
     if (!parsed.success) {
       return NextResponse.json(
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { phoneNumber, email, password } = parsed.data;
+    const { fullName, email, password } = parsed.data;
 
     const existingAdmin = await User.findOne({ email });
 
@@ -41,9 +41,11 @@ export async function POST(req: Request) {
     const hashedPassword = await bcrypt.hash(password, 12);
     const username = await generateUsername(joinedAt);
     const verificationCode = generateVerificationCode();
-
+    const nameParts = await splitFullName(fullName || null);
+    const { firstName, lastName } = nameParts;
     const newUser = new User({
-      phoneNumber,
+      firstName,
+      lastName,
       email,
       password: hashedPassword,
       username,

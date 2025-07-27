@@ -6,10 +6,17 @@ const ProfileSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  profilePicture: {
+    type: String,
+  },
+  bio: {
+    type: String,
+    maxlength: 500,
+  },
   firstName: { type: String },
   lastName: { type: String },
-  email: { type: String },
-  username: { type: String },
+  address: { type: String },
+
 });
 
 export const Profile =

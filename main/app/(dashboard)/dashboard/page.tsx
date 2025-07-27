@@ -1,40 +1,81 @@
-import { Metadata } from "next";
-import Hero from "@/components/Hero";
-// import Brands from "@/components/Brands";
-import Feature from "@/components/Features";
-import About from "@/components/About";
-import FeaturesTab from "@/components/FeaturesTab";
-// import FunFact from "@/components/FunFact";
-import Integration from "@/components/Integration";
-import CTA from "@/components/CTA";
-import FAQ from "@/components/FAQ";
-import Pricing from "@/components/Pricing";
-import Contact from "@/components/Contact";
-// import Blog from "@/components/Blog";
-// import Testimonial from "@/components/Testimonial";
+// app/(dashboard)/dashboard/page.tsx
+import GiftingPage from "./gift/create/page";
+import DashboardLayout from "./layout";
+import StatsPage from "./stats/page";
+// Import your components here
+// import StatsComponent from '../../../components/StatsComponent';
+// import GiftComponent from '../../../components/GiftComponent';
 
-export const metadata: Metadata = {
-  title: "Simplify Giveaways & Crowdfunding – Gift Smarter with GiftPool",
-  description: "Create links that let others claim or contribute – seamless, secure, and hassle-free.",
-  // other metadata
+const Dashboard = () => {
+  return (
+    <div className="space-y-6 dark:bg-black">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {/* Quick Stats Cards */}
+        <div className="rounded-lg bg-white p-6 shadow">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Total Users</p>
+              <p className="text-2xl font-bold text-gray-900">1,234</p>
+            </div>
+            <div className="text-2xl text-blue-500">👥</div>
+          </div>
+        </div>
+
+        <div className="rounded-lg bg-white p-6 shadow">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Revenue</p>
+              <p className="text-2xl font-bold text-gray-900">$12,345</p>
+            </div>
+            <div className="text-2xl text-green-500">💰</div>
+          </div>
+        </div>
+
+        <div className="rounded-lg bg-white p-6 shadow">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Orders</p>
+              <p className="text-2xl font-bold text-gray-900">567</p>
+            </div>
+            <div className="text-2xl text-purple-500">📦</div>
+          </div>
+        </div>
+
+        <div className="rounded-lg bg-white p-6 shadow">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Growth</p>
+              <p className="text-2xl font-bold text-gray-900">+12%</p>
+            </div>
+            <div className="text-2xl text-red-500">📈</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Area - This is where you'll import your components */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="rounded-lg bg-white p-6 shadow">
+          <h3 className="mb-4 text-lg font-medium text-gray-900">
+            Stats Component
+          </h3>
+          {/* <StatsComponent /> */}
+          <div className="py-8 text-center text-gray-500">
+            <StatsPage />
+          </div>
+        </div>
+
+        <div className="rounded-lg bg-white p-6 shadow">
+          <h3 className="mb-4 text-lg font-medium text-gray-900">
+            Gift Component
+          </h3>
+          {/* <GiftComponent /> */}
+          <div className="py-8 text-center text-gray-500">
+            <GiftingPage />{" "}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
-export default function Home() {
-  return (
-    <main>
-      <Hero />
-      {/* <Brands /> */}
-      <Feature />
-      <About />
-      <FeaturesTab />
-      {/* <FunFact /> */}
-      <Integration />
-      <CTA />
-      <FAQ />
-      {/* <Testimonial /> */}
-      <Pricing />
-      <Contact />
-      {/* <Blog /> */}
-    </main>
-  );
-}
+export default Dashboard;

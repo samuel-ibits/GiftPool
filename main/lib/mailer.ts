@@ -11,6 +11,14 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+export const notificationTransporter = nodemailer.createTransport({
+  service: process.env.NOTIFICATION_SMTP_SERVICE,
+  auth: {
+    user: process.env.NOTIFICATION_EMAIL_USER, // Your email address
+    pass: process.env.NOTIFICATION_EMAIL_PASS, // Your email password or app password
+  },
+});
+
 export async function sendVerificationEmail(to: string, code: string) {
   const mailOptions = {
     from: `"GiftPool App" <${process.env.EMAIL_USER}>`,
@@ -58,6 +66,31 @@ export async function resendOtpEmail(to: string, otp: string): Promise<void> {
   await transporter.sendMail(mailOptions);
 }
 
+
+export async function sendResetEmail(to: string, url: string): Promise<void> {
+  const mailOptions = {
+    from: `"GiftPool" <${process.env.NOTIFICATION_EMAIL_USER}>`,
+    to,
+    subject: "Password Reset",
+    html: `
+      <div style="font-family: sans-serif; padding: 1rem;">
+        <h2>🔐Reset your password</h2> 
+        <p>You have requested to change your password, Use the link bellow to reset it</p>
+           <div style="text-align: center; margin: 20px 0;">
+          <a href=${url}>
+    <Button style="display:inline-block; padding: 6px 12px; background-color: #1e40af; color: #fff; font-size: 12px; letter-spacing: 4px; border-radius: 6px;" >
+      Reset Password
+        </Button>
+        </a>
+        </div>
+        <p> ${url} <p>
+          <p style="letter-spacing: 2px;" > This link will expire shortly.If you did not request this, please ignore.</p>
+            </div>
+              `,
+  };
+
+  await transporter.sendMail(mailOptions);
+}
 
 export const sendGiftPoolMail = async ({
   to,

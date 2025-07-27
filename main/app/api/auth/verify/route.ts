@@ -1,33 +1,41 @@
 import { NextResponse } from "next/server";
 import { serialize } from "cookie";
 import { verifyOtpAndGenerateToken } from "@/lib/otp";
-import type { VerifiedAdmin } from "@/types/auth";
+import type { VerifiedAdmin } from "@/lib/types/auth";
 import { sendWelcomeEmail } from "@/lib/mailer";
-import { connectToDatabase } from '@/lib/mongoose';
-import { Profile } from "@/models/profile";
+import connectDB from "@/lib/db";
+import { Profile } from "@/lib/models/Profile";
+import { Wallet } from "@/lib/models/Wallet";
 
 export async function POST(req: Request) {
-  const { otp } = await req.json();
+  const { otp, email } = await req.json();
 
   try {
     const { accessToken, refreshToken, user }: VerifiedAdmin =
-      await verifyOtpAndGenerateToken(otp);
+      await verifyOtpAndGenerateToken(otp, email);
 
-    await connectToDatabase();
+    await connectDB();
 
     const newProfile = new Profile({
       user: user.id,
       email: user.email,
       username: user.username,
+      firstName: "",
+      lastName: "",
     });
 
     await newProfile.save();
+
+    const newWallet = new Wallet({
+      user: user.id,
+    });
+    await newWallet.save();
 
     const accessCookie = serialize("access-token", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 15, // 15 minutes
+      maxAge: 60 * 60 * 24 * 7, // 7 days
       path: "/",
     });
 

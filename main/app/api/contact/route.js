@@ -3,6 +3,7 @@ import { connectToDatabase } from '@/lib/mongoose';
 import { Contact } from '@/models/contact';
 import Newsletter from '@/models/newsletter';
 import { sendContactMail,sendNewsletterMail } from '@/utils/mailer';
+import { SERVER_PROPS_EXPORT_ERROR } from 'next/dist/lib/constants';
 
 export async function POST(request) {
   const { name, email, message, source = 'other',subject, phonenumber, newsletter } = await request.json();
@@ -27,17 +28,9 @@ export async function POST(request) {
       await sendNewsletterMail({ to: email, name });
     }
 
-    return NextResponse.json({
-      message: 'Success! Message received and email sent.',
-      status: 200,
-      data: emailResult,
-    });
+    return created(emailResult);
   } catch (error) {
     console.error('❌ Error:', error);
-    return NextResponse.json({
-      message: 'Internal Server Error',
-      status: 500,
-      error: error.message,
-    });
+    return serverError('Internal Server Error');
   }
 }

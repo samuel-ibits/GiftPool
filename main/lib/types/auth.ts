@@ -1,4 +1,7 @@
 // types/auth.ts
+import { Types } from 'mongoose';
+
+
 export interface VerifiedAdmin {
   accessToken: string;
   refreshToken: string;
@@ -40,4 +43,11 @@ export interface JwtValidatorTokenPayload {
   type: "access";
   iat?: number;
   exp?: number;
+  email?: string;
 }
+
+export interface Iuser {
+  _id: string | Types.ObjectId;
+  email: string;
+  [key: string]: unknown;
+};

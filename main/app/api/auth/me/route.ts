@@ -1,5 +1,5 @@
-import { Profile } from "@/models/profile";
-import { connectToDatabase } from '@/lib/mongoose';
+import { Profile } from "@/lib/models/Profile";
+import dbConnect from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/middleware/requireAuth";
 
@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   try {
     const decoded = requireAuth(req);
 
-    await connectToDatabase();
+    await dbConnect();
     const user = await Profile.find({ user: decoded.sub });
 
     if (!user) {

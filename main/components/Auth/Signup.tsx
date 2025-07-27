@@ -10,6 +10,10 @@ const Signup = () => {
     password: "",
   });
 
+  const handleGoogle = () => {
+    window.location.href = "/api/auth/google";
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     fetch("/api/auth/signup", {
@@ -81,6 +85,9 @@ const Signup = () => {
 
             <div className="flex items-center gap-8">
               <button
+                onClick={() => {
+                  handleGoogle();
+                }}
                 aria-label="signup with google"
                 className="text-body-color dark:text-body-color-dark dark:shadow-two mb-6 flex w-full items-center justify-center rounded-sm border border-stroke bg-[#f8f8f8] px-6 py-3 text-base outline-none transition-all duration-300 hover:border-primary hover:bg-primary/5 hover:text-primary dark:border-transparent dark:bg-[#2C303B] dark:hover:border-primary dark:hover:bg-primary/5 dark:hover:text-primary dark:hover:shadow-none"
               >
@@ -130,8 +137,6 @@ const Signup = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-7.5">
-      
-
               <div className="mb-7.5 flex flex-col gap-7.5 lg:mb-12.5 lg:flex-row lg:justify-between lg:gap-14">
                 <input
                   name="email"
@@ -163,7 +168,7 @@ const Signup = () => {
                     type="checkbox"
                     className="peer sr-only"
                   />
-                  <span className="border-gray-300 bg-gray-100 text-blue-600 dark:border-gray-600 dark:bg-gray-700 group mt-1 flex h-5 min-w-[20px] items-center justify-center rounded peer-checked:bg-primary">
+                  <span className="group mt-1 flex h-5 min-w-[20px] items-center justify-center rounded border-gray-300 bg-gray-100 text-blue-600 peer-checked:bg-primary dark:border-gray-600 dark:bg-gray-700">
                     <svg
                       className="opacity-0 peer-checked:group-[]:opacity-100"
                       width="10"
@@ -189,7 +194,7 @@ const Signup = () => {
                 </div>
 
                 <button
-                type="submit"
+                  type="submit"
                   aria-label="signup with email and password"
                   className="inline-flex items-center gap-2.5 rounded-full bg-black px-6 py-3 font-medium text-white duration-300 ease-in-out hover:bg-blackho dark:bg-btndark dark:hover:bg-blackho"
                 >
