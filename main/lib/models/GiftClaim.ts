@@ -33,7 +33,10 @@ const GiftClaimSchema = new Schema({
     claimDetails: {
         phone: { type: String, default: '' },
         wallet: { type: String, default: '' },
-        account: { type: String, default: '' },
+        bank: {
+            bankName: { type: String, default: '' },
+            accountNumber: { type: String, default: '' }
+        },
         claimedAt: { type: Date },
     },
 }, {

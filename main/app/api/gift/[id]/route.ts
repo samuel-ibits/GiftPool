@@ -10,7 +10,6 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         const giftId = params.id;
         const db = await dbConnect();
 
-
         const gift = await Gift.findOne({ _id: new ObjectId(giftId) });
 
         if (!gift) {

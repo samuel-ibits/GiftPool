@@ -32,23 +32,43 @@ const giftSchema = new Schema(
             required: true,
         },
         duration: {
-            type: Number, // in days 
+            type: Number, // in days
             required: true,
         },
         dispense: {
             type: Date,
             default: null,
-            required: true
-        }
-        ,
+            required: true,
+        },
         verified: {
             type: Boolean,
             default: false,
         },
+
+        giftBag: {
+            airtime: {
+                enabled: { type: Boolean, default: false },
+                networks: [{ type: String }],
+            },
+            data: {
+                enabled: { type: Boolean, default: false },
+                networks: [{ type: String }],
+            },
+            giftCard: {
+                enabled: { type: Boolean, default: false },
+                types: [{ type: String }], // e.g. Amazon, iTunes
+            },
+            bank: {
+                enabled: { type: Boolean, default: false },
+                banks: [{ type: String }], // optional: GTB, Access, etc.
+            },
+            random: {
+                enabled: { type: Boolean, default: true }, // If true, pick randomly from other enabled types
+            }
+        },
     },
     { timestamps: true }
 );
-
 
 // Pre-save hook to generate slug
 giftSchema.pre("save", function (next) {

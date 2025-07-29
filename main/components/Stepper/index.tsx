@@ -283,13 +283,17 @@ export default function GiftingStepper() {
                 <input
                   type="text"
                   className=" h-12 w-full rounded-md border px-4"
-                  value={"https://giftingapp.com/" + giftLink}
+                  value={
+                    `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/gift/participate/` +
+                    giftLink
+                  }
                   readOnly
                 />
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(
-                      "https://giftingapp.com/" + giftLink,
+                      `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/gift/participate/` +
+                        giftLink,
                     );
                     setCopied(true); // Update feedback
                     setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds

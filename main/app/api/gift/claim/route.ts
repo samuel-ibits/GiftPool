@@ -1,36 +1,37 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Gift from "@/lib/models/Gift";
-import { notFound, serverError } from "@/lib/response";
-import { ok } from "assert";
+import { notFound, serverError, ok } from "@/lib/response";
+import GiftClaim from "@/lib/models/GiftClaim";
 
 export async function POST(request: Request) {
     try {
-        const { email, name, phone, wallet, account } = await request.json();
+        const { email, phone, wallet, bankName, accountNumber } = await request.json();
         await dbConnect();
 
         // Update gift record with claim info
-        const result = await Gift.findOneAndUpdate(
-            { email, name, claimed: false },
+
+        const result = await GiftClaim.findOneAndUpdate(
+            { email, claimed: false },
             {
                 $set: {
                     claimed: true,
                     claimDetails: {
                         phone,
                         wallet,
-                        account,
+                        bank: { bankName, accountNumber },
                         claimedAt: new Date(),
                     }
                 }
             },
             { returnDocument: "after" }
         );
-
-        if (!result.value) {
+        console.log("Claim result:", result);
+        if (!result) {
             return notFound("Gift not found or already claimed");
         }
 
-        return ok("Claim submitted successfully");
+        return ok(result, "Claim submitted successfully");
     } catch (error) {
         console.error("Claim submission error:", error);
         return serverError("Internal Server Error");
