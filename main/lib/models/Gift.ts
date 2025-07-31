@@ -29,16 +29,15 @@ const giftSchema = new Schema(
         },
         splits: {
             type: Number,
-            required: true,
+            default: 1,
         },
         duration: {
-            type: Number, // in days
-            required: true,
+            type: Number,
+            default: 1,
         },
         dispense: {
             type: Date,
-            default: null,
-            required: true,
+            default: Date.now,
         },
         verified: {
             type: Boolean,

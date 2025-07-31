@@ -31,7 +31,11 @@ const Signin = () => {
       })
       .then((result) => {
         if (result.success) {
-          console.log(result);
+          // Set cookies manually
+          document.cookie = `access-token=${result.accessToken}; path=/dashboard;`;
+          document.cookie = `refresh-token=${result.refreshToken}; path=/dashboard ;`;
+          console.log("Signup successful:", result);
+          // Redirect
           window.location.href = "/dashboard";
         }
       })

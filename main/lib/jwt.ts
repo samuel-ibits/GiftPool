@@ -14,7 +14,7 @@ export function signAccessToken(user: { id: string; email: string; role?: string
     type: "access",
   };
 
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: "15m" });
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: "5h" });
 }
 
 export function signRefreshToken(userId: string) {

@@ -73,8 +73,12 @@ export async function POST(req: NextRequest) {
   const refreshCookie = `refresh-token=${refreshToken}; HttpOnly; Path=/; Max-Age=${60 * 60 * 24 * 7
     }; ${process.env.NODE_ENV === "production" ? "Secure; SameSite=Lax;" : ""}`;
 
-  const response = new NextResponse(JSON.stringify({ success: true }), {
+  const response = new NextResponse(JSON.stringify({
+    success: true, refreshToken,
+    accessToken,
+  }), {
     status: 200,
+
     headers: {
       "Content-Type": "application/json",
     },

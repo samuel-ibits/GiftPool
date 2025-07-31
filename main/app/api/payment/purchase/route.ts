@@ -23,26 +23,28 @@ export async function POST(request: NextRequest) {
 
         if (body.type == "gift") {
             const gift = await Gift.findOne({ slug: body.orderId });
-            if (!gift) {
-                return badRequest("Gift not found");
-            }
-            const paymentInit = await initializePayment2(
-                user.email,
-                gift.amount,
-                {
-                    type: 'gift',
-                    amount: gift.amount,
-                    items: [],
-                    uuid,
-                    orderId: body.orderId
+            if (gift) {
+                if (!gift) {
+                    const gift = await Gift.create({ slug: body.orderId });
                 }
+                const paymentInit = await initializePayment2(
+                    user.email,
+                    gift.amount,
+                    {
+                        type: 'gift',
+                        amount: gift.amount,
+                        items: [],
+                        uuid,
+                        orderId: body.orderId
+                    }
 
-            );
-            return ok({
-                success: true,
-                message: "Payment initialized",
-                data: paymentInit,
-            });
+                );
+                return ok({
+                    success: true,
+                    message: "Payment initialized",
+                    data: paymentInit,
+                });
+            }
         }
     } catch (error) {
         console.error("Failed to initialize payment:", error);

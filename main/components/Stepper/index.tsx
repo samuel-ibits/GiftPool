@@ -1,6 +1,9 @@
 "use client";
+import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 import { useEffect } from "react";
+import slugify from "slugify";
+import PaymentModal from "../Payment";
 
 export default function GiftingStepper() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -10,15 +13,16 @@ export default function GiftingStepper() {
   const [splits, setSplits] = useState<number | null>(null);
   const [giftLink, setGiftLink] = useState("your-link");
   const [copied, setCopied] = useState(false);
-
+  const [slug, setSlug] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(""); // base64 or URL
   const [amount, setAmount] = useState<number | null>(null);
-
   const [dispense, setDispense] = useState("");
   const [verified, setVerified] = useState<boolean>(false);
-
+  const { token } = useAuth();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [paymentUrl, setPaymentUrl] = useState("");
   useEffect(() => {
     if (dispenseOption === "immediately") {
       setDispense(new Date().toISOString());
@@ -26,8 +30,8 @@ export default function GiftingStepper() {
   }, [dispenseOption]);
 
   const steps = [
-    { id: 1, title: "Gift Amount" },
-    { id: 2, title: "Gift Details" },
+    { id: 1, title: "Gift Details" },
+    { id: 2, title: "Gift Amount" },
     { id: 3, title: "Timing" },
     { id: 4, title: "Share & Track" },
   ];
@@ -83,9 +87,10 @@ export default function GiftingStepper() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          slug,
           title,
           description,
-          image, // can be base64 or link from a CDN/upload
+          image,
           amount,
           splits,
           duration,
@@ -98,9 +103,11 @@ export default function GiftingStepper() {
 
       if (res.ok) {
         alert("Gift created successfully!");
-        console.log("Created Gift:", data);
-        setCurrentStep((prev) => Math.min(steps.length, prev + 1));
         setGiftLink(data.data.slug);
+        setSlug(data.data.slug);
+        console.log("Created Gift:", slug, data);
+
+        return slug || data.data.slug;
       } else {
         alert("Failed to create gift: " + data.message);
       }
@@ -112,22 +119,37 @@ export default function GiftingStepper() {
 
   const paynow = async () => {
     try {
-      const res = await fetch("/api/payment/paystack/initiate", {
+      const slug = await handleSubmitGift();
+      if (!slug) {
+        const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+        let randomSuffix = "";
+        for (let i = 0; i < 6; i++) {
+          randomSuffix += chars.charAt(Math.floor(Math.random() * 6));
+        }
+        console.log("Random Suffix:", randomSuffix);
+        const slug = slugify(`${title}-${randomSuffix}`, {
+          lower: true,
+          strict: true,
+        });
+        setSlug(slug);
+      }
+      const res = await fetch("/api/payment/purchase", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          Cookie: `access-token=${token}`,
         },
         body: JSON.stringify({
-          amount,
-          metadata: { type: "gift", amount },
+          type: "gift",
+          orderId: slug,
         }),
       });
-
       const data = await res.json();
-
       if (res.ok) {
-        if (data.data && data.data.authorization_url) {
+        if (data.data && data.data.data.authorization_url) {
           window.open(data.data.authorization_url, "_blank");
+          setPaymentUrl(data.data.authorization_url);
+          setModalOpen(true);
+          // setCurrentStep((prev) => Math.min(steps.length, prev + 1));
         }
       } else {
         alert("Failed to create gift: " + data.message);
@@ -137,7 +159,7 @@ export default function GiftingStepper() {
       alert("Failed to initialize payment. Please try again.");
     }
   };
-
+  console.log("token", token);
   return (
     <div className="mx-auto max-w-4xl p-6">
       {/* Stepper Header */}
@@ -169,52 +191,6 @@ export default function GiftingStepper() {
       {/* Stepper Content */}
       <div className="rounded-lg border bg-white p-6 shadow-sm">
         {currentStep === 1 && (
-          <div>
-            <h2 className="mb-4 text-xl font-semibold">Gift Amount</h2>
-            <div className="flex flex-col items-center space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
-              <input
-                type="number"
-                className=" h-12 w-full rounded-md border px-4"
-                placeholder="Enter gift amount"
-                value={amount !== null ? amount : ""}
-                onChange={(e) => setAmount(Number(e.target.value))}
-              />
-              <button
-                onClick={paynow}
-                className="w-full rounded-md bg-green-600 px-6 py-2 text-white sm:w-auto"
-              >
-                Pay Now
-              </button>
-            </div>
-            <div className="mt-4">
-              <label className="mb-2 block text-sm font-medium">
-                Number of Splits
-              </label>
-              <input
-                type="number"
-                className="h-12 w-full rounded-md border px-4"
-                placeholder="Enter number of participants"
-                value={splits !== null ? splits : ""}
-                onChange={(e) => setSplits(Number(e.target.value))}
-              />
-            </div>
-            {amount && splits && (
-              <div className="mt-4 rounded-md bg-gray-100 p-4">
-                <p className="text-sm">
-                  Each participant will receive:{" "}
-                  <strong>
-                    {isNaN(amount / splits)
-                      ? "Invalid amount or splits"
-                      : (amount / splits).toFixed(2)}{" "}
-                    currency
-                  </strong>
-                </p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {currentStep === 2 && (
           <div>
             <h2 className="mb-4 text-xl font-semibold">Gift Details</h2>
             <div className="mb-4">
@@ -259,6 +235,51 @@ export default function GiftingStepper() {
             </div>
           </div>
         )}
+        {currentStep === 2 && (
+          <div>
+            <h2 className="mb-4 text-xl font-semibold">Gift Amount</h2>
+            <div className="flex flex-col items-center space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
+              <input
+                type="number"
+                className=" h-12 w-full rounded-md border px-4"
+                placeholder="Enter gift amount"
+                value={amount !== null ? amount : ""}
+                onChange={(e) => setAmount(Number(e.target.value))}
+              />
+              {/* <button
+                onClick={paynow}
+                className="w-full rounded-md bg-green-600 px-6 py-2 text-white sm:w-auto"
+              >
+                Pay Now
+              </button> */}
+            </div>
+            <div className="mt-4">
+              <label className="mb-2 block text-sm font-medium">
+                Number of Splits
+              </label>
+              <input
+                type="number"
+                className="h-12 w-full rounded-md border px-4"
+                placeholder="Enter number of participants"
+                value={splits !== null ? splits : ""}
+                onChange={(e) => setSplits(Number(e.target.value))}
+              />
+            </div>
+            {amount && splits && (
+              <div className="mt-4 rounded-md bg-gray-100 p-4">
+                <p className="text-sm">
+                  Each participant will receive:{" "}
+                  <strong>
+                    {isNaN(amount / splits)
+                      ? "Invalid amount or splits"
+                      : (amount / splits).toFixed(2)}{" "}
+                    currency
+                  </strong>
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
         {currentStep === 3 && (
           <div>
@@ -300,6 +321,12 @@ export default function GiftingStepper() {
                 />
               )}
             </div>
+
+            <PaymentModal
+              isOpen={modalOpen}
+              onClose={() => setModalOpen(false)}
+              authorizationUrl={paymentUrl}
+            />
           </div>
         )}
 
@@ -389,14 +416,14 @@ export default function GiftingStepper() {
           <button
             onClick={() => {
               if (currentStep === 3) {
-                handleSubmitGift(); // Call your submit function
+                paynow();
               } else {
                 setCurrentStep((prev) => Math.min(steps.length, prev + 1));
               }
             }}
             className="rounded-md bg-indigo-600 px-6 py-2 text-white"
           >
-            {currentStep === 3 ? "Submit" : "Next"}
+            {currentStep === 3 ? "Pay Now" : "Next"}
           </button>
         ) : (
           <button
