@@ -46,7 +46,7 @@ export const sendReceiptMail = async ({
         await writeFile(pdfPath, pdfBuffer);
 
         const mailOptions = {
-            from: `"Harewa" <${process.env.NOTIFICATION_EMAIL_USER}>`,
+            from: `"${process.env.APP_NAME}" <${process.env.EMAIL_USER}>`,
             to,
             subject,
             html: `<p>Hi ${data.customerName},<br/> Please find your receipt attached.</p>`,
@@ -183,7 +183,7 @@ export const generateReceiptHtml = (data: {
             <div class="footer">
                 <div class="thank-you">Thank you for your payment!</div>
                 <p>This is an automatically generated receipt.</p>
-                <p>Harewa - Your trusted partner</p>
+                <p>${process.env.APP_NAME} - Your trusted partner</p>
             </div>
         </div>
     </body>

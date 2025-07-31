@@ -21,7 +21,7 @@ export const notificationTransporter = nodemailer.createTransport({
 
 export async function sendVerificationEmail(to: string, code: string) {
   const mailOptions = {
-    from: `"GiftPool App" <${process.env.EMAIL_USER}>`,
+    from: `"${process.env.APP_NAME}" <${process.env.EMAIL_USER}>`,
     to,
     subject: "Verify Your Email",
     html: `
@@ -39,7 +39,7 @@ export async function sendVerificationEmail(to: string, code: string) {
 
 export async function sendWelcomeEmail(to: string) {
   const mailOptions = {
-    from: `"GiftPool App" <${process.env.EMAIL_USER}>`,
+    from: `"${process.env.APP_NAME}" <${process.env.EMAIL_USER}>`,
     to,
     subject: "Welcome to Our Platform",
     html: `<p>Hey,</p><p>Welcome aboard! We're excited to have you.</p>`,
@@ -50,7 +50,7 @@ export async function sendWelcomeEmail(to: string) {
 
 export async function resendOtpEmail(to: string, otp: string): Promise<void> {
   const mailOptions = {
-    from: `"GiftPool App" <${process.env.EMAIL_USER}>`,
+    from: `"${process.env.APP_NAME}" <${process.env.EMAIL_USER}>`,
     to,
     subject: "Your OTP Verification Code",
     html: `
@@ -105,7 +105,7 @@ export const sendGiftPoolMail = async ({
 }) => {
   try {
     const info = await transporter.sendMail({
-      from: `"GiftPool App" <${process.env.EMAIL_USER}>`,
+      from: `"${process.env.APP_NAME}" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html,
@@ -131,7 +131,7 @@ export const sendFailureMail = async ({
 }) => {
   try {
     const info = await transporter.sendMail({
-      from: `"GiftPool App" <${process.env.EMAIL_USER}>`,
+      from: `"${process.env.APP_NAME}" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html,

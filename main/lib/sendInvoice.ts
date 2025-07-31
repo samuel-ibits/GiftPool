@@ -51,7 +51,7 @@ export const sendInvoiceMail = async ({
     await writeFile(pdfPath, pdfBuffer);
 
     const mailOptions = {
-      from: `"Harewa" <${process.env.NOTIFICATION_EMAIL_USER}>`,
+      from: `"${process.env.APP_NAME}" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html: `<p>Hi ${data.customerName},<br/>Please find your invoice attached.</p>`,
@@ -162,7 +162,7 @@ ${data.payUrl ? `
 
       <div class="footer">
         <p>Thank you for your business!</p>
-        <p>Harewa - Your trusted partner</p>
+        <p>${process.env.APP_NAME} - Your trusted partner</p>
       </div>
     </body>
     </html>

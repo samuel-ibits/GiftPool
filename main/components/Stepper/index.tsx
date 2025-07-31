@@ -110,6 +110,34 @@ export default function GiftingStepper() {
     }
   };
 
+  const paynow = async () => {
+    try {
+      const res = await fetch("/api/payment/paystack/initiate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount,
+          metadata: { type: "gift", amount },
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        if (data.data && data.data.authorization_url) {
+          window.open(data.data.authorization_url, "_blank");
+        }
+      } else {
+        alert("Failed to create gift: " + data.message);
+      }
+    } catch (error) {
+      console.error("Payment initialization error:", error);
+      alert("Failed to initialize payment. Please try again.");
+    }
+  };
+
   return (
     <div className="mx-auto max-w-4xl p-6">
       {/* Stepper Header */}
@@ -151,7 +179,10 @@ export default function GiftingStepper() {
                 value={amount !== null ? amount : ""}
                 onChange={(e) => setAmount(Number(e.target.value))}
               />
-              <button className="w-full rounded-md bg-green-600 px-6 py-2 text-white sm:w-auto">
+              <button
+                onClick={paynow}
+                className="w-full rounded-md bg-green-600 px-6 py-2 text-white sm:w-auto"
+              >
                 Pay Now
               </button>
             </div>
