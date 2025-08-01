@@ -1,7 +1,6 @@
 "use client";
 import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import slugify from "slugify";
 import PaymentModal from "../Payment";
 
@@ -23,6 +22,8 @@ export default function GiftingStepper() {
   const { token } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
   const [paymentUrl, setPaymentUrl] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     if (dispenseOption === "immediately") {
       setDispense(new Date().toISOString());
@@ -102,22 +103,24 @@ export default function GiftingStepper() {
       const data = await res.json();
 
       if (res.ok) {
-        alert("Gift created successfully!");
+        //  console.log("Gift created successfully!");
         setGiftLink(data.data.slug);
         setSlug(data.data.slug);
         console.log("Created Gift:", slug, data);
 
         return slug || data.data.slug;
       } else {
-        alert("Failed to create gift: " + data.message);
+        console.log("Failed to create gift: " + data.message);
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Something went wrong!");
+      console.log("Something went wrong!");
     }
   };
 
   const paynow = async () => {
+    setIsLoading(true);
+
     try {
       const slug = await handleSubmitGift();
       if (!slug) {
@@ -146,22 +149,30 @@ export default function GiftingStepper() {
       const data = await res.json();
       if (res.ok) {
         if (data.data && data.data.data.authorization_url) {
-          window.open(data.data.authorization_url, "_blank");
-          setPaymentUrl(data.data.authorization_url);
+          // window.open(data.data.authorization_url, "_blank");
+          setPaymentUrl(data.data.data.authorization_url);
           setModalOpen(true);
+          setIsLoading(false);
           // setCurrentStep((prev) => Math.min(steps.length, prev + 1));
         }
       } else {
-        alert("Failed to create gift: " + data.message);
+        setIsLoading(false);
+        console.log("Failed to create gift: " + data.message);
       }
     } catch (error) {
+      setIsLoading(false);
       console.error("Payment initialization error:", error);
-      alert("Failed to initialize payment. Please try again.");
+      console.log("Failed to initialize payment. Please try again.");
     }
   };
   console.log("token", token);
   return (
     <div className="mx-auto max-w-4xl p-6">
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+          <div className="h-12 w-12 animate-spin rounded-full border-t-4 border-indigo-600 border-opacity-75"></div>
+        </div>
+      )}
       {/* Stepper Header */}
       <ol className="mb-8 flex flex-col items-center justify-between space-y-4 sm:flex-row sm:space-y-0">
         {steps.map((step, index) => (
@@ -286,7 +297,7 @@ export default function GiftingStepper() {
             <h2 className="mb-4 text-xl font-semibold">Timing</h2>
             <div className="mb-4">
               <label className="mb-2 block text-sm font-medium">
-                Gifting Duration
+                Gifting Duration In Days
               </label>
               <input
                 type="number"
@@ -427,7 +438,7 @@ export default function GiftingStepper() {
           </button>
         ) : (
           <button
-            onClick={() => alert("Tracking Gifting...")}
+            onClick={() => console.log("Tracking Gifting...")}
             className="rounded-md bg-indigo-600 px-6 py-2 text-white"
           >
             Track Gifting
