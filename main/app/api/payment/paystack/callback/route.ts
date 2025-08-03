@@ -5,6 +5,7 @@ import { Wallet } from "@/lib/models/Wallet";
 import { addFunds, deductFunds } from "@/lib/wallet";
 import { getUserFromUuid } from "@/lib/utils";
 import { Iuser } from "@/lib/types/auth";
+import Gift from "@/lib/models/Gift";
 
 
 export async function GET(req: Request) {
@@ -58,11 +59,16 @@ export async function GET(req: Request) {
         }
         if (type == "gift") {
             console.log("Deducting funds for gift order:", orderId);
-            const result = await deductFunds({
-                amount,
-                userId: user._id,
-                reference,
-            });
+            // const result = await deductFunds({
+            //     amount,
+            //     userId: user._id,
+            //     reference,
+            // });
+            const result = await Gift.findOneAndUpdate(
+                { _id: orderId, user: user._id },
+                { $set: { verified: true } },
+                { new: true }
+            );
 
             if (!result) {
                 return serverError("Failed to process gift order");
