@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import Newsletter from '@/models/newsletter';
+import Newsletter from '@/lib/models/Newsletter';
 import { connectToDatabase } from '@/lib/mongoose';
-import { sendNewsletterMail } from '@/utils/mailer';
+import { sendNewsletterMail } from '@/lib/utils/mailer';
 
 
 export async function POST(request) {
@@ -18,13 +18,13 @@ export async function POST(request) {
         const existingEmail = await Newsletter.findOne({ email });
         if (existingEmail) {
             await Newsletter.updateOne({ email }, { unsubscribed: false });
-            await sendNewsletterMail({to:email});
+            await sendNewsletterMail({ to: email, name: "" });
             return NextResponse.json({ message: 'Successfully resubscribed to the newsletter!' });
         }
-       
+
 
         await Newsletter.create({ email });
-        await sendNewsletterMail({to:email});
+        await sendNewsletterMail({ to: email, name: "" });
 
         return NextResponse.json({ message: 'Successfully subscribed to the newsletter!' });
     } catch (error) {

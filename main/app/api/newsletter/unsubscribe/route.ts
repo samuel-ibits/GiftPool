@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongoose';
-import Newsletter from '@/models/newsletter';
+import Newsletter from '@/lib/models/Newsletter';
 
 export async function POST(req) {
     try {

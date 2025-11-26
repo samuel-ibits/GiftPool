@@ -4,7 +4,7 @@
       "dom",
       "dom.iterable",
       "esnext"
-    ],
+    ],  
     "baseUrl": ".",
     "allowJs": true,
     "skipLibCheck": true,
@@ -38,8 +38,9 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
-, "app/(dashboard)/dashboard/stats"  ],
+    ".next/types/**/*.ts", 
+    "app/(dashboard)/dashboard/stats", 
+    "app/api/auth/[...nextauth].js"  ],
   "exclude": [
     "node_modules"
   ]
