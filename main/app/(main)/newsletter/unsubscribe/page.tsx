@@ -1,8 +1,8 @@
 'use client';
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
-const NewsletterUnsubscribePage = () => {
+function UnsubscribeForm() {
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
@@ -58,6 +58,12 @@ const NewsletterUnsubscribePage = () => {
       {status && <p className="mt-4 text-sm text-gray-700">{status}</p>}
     </main>
   );
-};
+}
 
-export default NewsletterUnsubscribePage;
+export default function NewsletterUnsubscribePage() {
+  return (
+    <Suspense fallback={<div className="max-w-md mx-auto p-4 text-center">Loading...</div>}>
+      <UnsubscribeForm />
+    </Suspense>
+  );
+}

@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongoose';
-import { Contact } from '@/lib/models/Contact';
-import Newsletter from '@/lib/models/Newsletter';
+import { Contact } from '@/lib/models/contact';
+import Newsletter from '@/lib/models/newsletter';
 import { sendContactMail, sendNewsletterMail } from '@/lib/utils/mailer';
-import { SERVER_PROPS_EXPORT_ERROR } from 'next/dist/lib/constants';
 import { created, serverError } from '@/lib/response';
 
 export async function POST(request) {
