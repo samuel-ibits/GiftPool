@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongoose';
-import { Contact } from '@/lib/models/contact';
-import Newsletter from '@/lib/models/newsletter';
+import { Contact } from '@/lib/models/Contact';
+import Newsletter from '@/lib/models/Newsletter';
 import { sendContactMail, sendNewsletterMail } from '@/lib/utils/mailer';
 import { created, serverError } from '@/lib/response';
 

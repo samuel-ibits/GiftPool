@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongoose';
-import Newsletter from '@/lib/models/newsletter';
+import Newsletter from '@/lib/models/Newsletter';
 
 export async function POST(req) {
     try {
@@ -10,11 +10,11 @@ export async function POST(req) {
             return NextResponse.json({ error: 'Email is required' }, { status: 400 });
         }
         // Simulate removing the email from the newsletter list
-        await connectToDatabase();      
+        await connectToDatabase();
         const result = await Newsletter.updateOne({ email }, { $set: { unsubscribe: true } });
-         console.log(`Unsubscribing email: ${result }`);
+        console.log(`Unsubscribing email: ${result}`);
         if (result.matchedCount === 0) {
-          throw new Error("Email not found.");
+            throw new Error("Email not found.");
         }
 
         if (result) {
@@ -23,18 +23,18 @@ export async function POST(req) {
             return NextResponse.json({ error: 'Failed to unsubscribe' }, { status: 500 });
         }
     } catch (error) {
-        return NextResponse.json({ error: 'Internal Server Error'+error }, { status: 500 });
+        return NextResponse.json({ error: 'Internal Server Error' + error }, { status: 500 });
     }
 }
 
 // Mock function to simulate email unsubscription
 async function unsubscribeEmail(email) {
-    await connectToDatabase();      
+    await connectToDatabase();
     const result = await Newsletter.updateOne({ email }, { $set: { unsubscribe: true } });
-console.log(`Unsubscribing email: ${result }`);
+    console.log(`Unsubscribing email: ${result}`);
     if (result.matchedCount === 0) {
-      throw new Error("Email not found.");
+        throw new Error("Email not found.");
     }
-        console.log(`Unsubscribing email: ${email}`);
+    console.log(`Unsubscribing email: ${email}`);
     return true;
 }

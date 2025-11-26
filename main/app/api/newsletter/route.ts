@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import Newsletter from '@/lib/models/newsletter';
+import Newsletter from '@/lib/models/Newsletter';
 import { connectToDatabase } from '@/lib/mongoose';
 import { sendNewsletterMail } from '@/lib/utils/mailer';
 
