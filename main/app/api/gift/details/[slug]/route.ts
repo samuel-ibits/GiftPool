@@ -6,11 +6,11 @@ import { notFound, ok, serverError } from "@/lib/response";
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: { slug: string } }
+    context: { params: Promise<{ slug: string }> }
 ) {
     try {
         await dbConnect();
-        const slug = params.slug;
+        const { slug } = await context.params;
 
         // Get the gift by slug
         const gift = await Gift.findOne({ slug }).lean();

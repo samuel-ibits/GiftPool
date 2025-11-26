@@ -5,12 +5,13 @@ import Gift from "@/lib/models/Gift";
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
     try {
         await dbConnect();
+        const { id } = await context.params;
 
-        const gift = await Gift.findOne({ _id: new ObjectId(params.id) });
+        const gift = await Gift.findOne({ _id: new ObjectId(id) });
 
         if (!gift) {
             return NextResponse.json(
