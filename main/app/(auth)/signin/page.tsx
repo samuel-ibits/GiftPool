@@ -2,8 +2,8 @@ import Signin from "@/components/Auth/Signin";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Login Page - Solid SaaS Boilerplate",
-  description: "This is Login page for Startup Pro",
+  title: "Giftpool | Sign In",
+  description: "The Sign In page for Giftpool application.",
   // other metadata
 };
 
