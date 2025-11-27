@@ -4,7 +4,7 @@ let isConnected = false;
 
 export const connectToDatabase = async () => {
     const MONGODB_URI = process.env.MONGODB_URL;
-
+    console.log('MongoDB URI:', MONGODB_URI);
     if (!MONGODB_URI) {
         throw new Error('Please define the MONGODB_URL environment variable');
     }
