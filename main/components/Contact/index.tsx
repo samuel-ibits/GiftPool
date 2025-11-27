@@ -1,11 +1,22 @@
 "use client";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import React, {useState} from "react";
+import React, { useState } from "react";
+import toast from "react-hot-toast";
+import { useToast } from "../ToastProvider";
 
 const Contact = () => {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '', subject: '', phonenumber: '', source: 'landing', newsletter: false });
-  const [status, setStatus] = useState('');
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+    subject: "",
+    phonenumber: "",
+    source: "landing",
+    newsletter: false,
+  });
+  const [status, setStatus] = useState("");
+  const { success, error, loading, dismiss } = useToast();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,24 +30,38 @@ const Contact = () => {
     return null;
   }
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setStatus('Sending...');
+    const toastId = loading("Creating gift...");
+    setStatus("Sending...");
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
       if (response.ok) {
-        setStatus('Message sent successfully!');
-        setFormData({ name: '', email: '', message: '', subject: '', phonenumber: '',source: 'landing', newsletter: false });
+        setStatus("Message sent successfully!");
+        setFormData({
+          name: "",
+          email: "",
+          message: "",
+          subject: "",
+          phonenumber: "",
+          source: "landing",
+          newsletter: false,
+        });
+        toast.success("Message sent successfully!");
       } else {
-        setStatus('Failed to send message.');
+        setStatus("Failed to send message.");
       }
+
+      dismiss(toastId);
+      success("Message sent successfully!");
     } catch (error) {
-      setStatus('An error occurred.');
+      setStatus("An error occurred.");
+      dismiss(toastId);
+      error(error?.message ?? "Something went wrong");
     }
   };
 
@@ -84,7 +109,7 @@ const Contact = () => {
                 Send a message
               </h2>
 
-              <form  onSubmit={handleSubmit} >
+              <form onSubmit={handleSubmit}>
                 <div className="mb-7.5 flex flex-col gap-7.5 lg:flex-row lg:justify-between lg:gap-14">
                   <input
                     type="text"
@@ -143,7 +168,7 @@ const Contact = () => {
 
                 <div className="flex flex-wrap gap-4 xl:justify-between ">
                   <div className="mb-4 flex md:mb-0">
-                  <input
+                    <input
                       name="newsletter"
                       onChange={(e) =>
                         setFormData((prev) => ({
@@ -157,7 +182,7 @@ const Contact = () => {
                       className="peer sr-only"
                     />
 
-                    <span className="border-gray-300 bg-gray-100 text-blue-600 dark:border-gray-600 dark:bg-gray-700 group mt-2 flex h-5 min-w-[20px] items-center justify-center rounded peer-checked:bg-primary">
+                    <span className="group mt-2 flex h-5 min-w-[20px] items-center justify-center rounded border-gray-300 bg-gray-100 text-blue-600 peer-checked:bg-primary dark:border-gray-600 dark:bg-gray-700">
                       <svg
                         className="opacity-0 peer-checked:group-[]:opacity-100"
                         width="10"
@@ -178,12 +203,13 @@ const Contact = () => {
                       htmlFor="default-checkbox"
                       className="flex max-w-[425px] cursor-pointer select-none pl-5"
                     >
-                      Subscribe to our Newsletter and stay up to date with our latest products.
+                      Subscribe to our Newsletter and stay up to date with our
+                      latest products.
                     </label>
                   </div>
 
                   <button
-                  type="submit"
+                    type="submit"
                     aria-label="send message"
                     className="inline-flex items-center gap-2.5 rounded-full bg-black px-6 py-3 font-medium text-white duration-300 ease-in-out hover:bg-blackho dark:bg-btndark"
                   >
