@@ -2,13 +2,17 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useToast } from "@/components/ToastProvider";
 
 const Signup = () => {
   const [data, setData] = useState({
     email: "",
     password: "",
   });
+  const toast = useToast();
+  const router = useRouter();
 
   const handleGoogle = () => {
     window.location.href = "/api/auth/google";
@@ -16,6 +20,8 @@ const Signup = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const toastId = toast.loading("Submitting...");
+
     fetch("/api/auth/signup", {
       method: "POST",
       headers: {
@@ -25,20 +31,27 @@ const Signup = () => {
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Failed to sign up");
+          console.log(response);
+
+          // toast.error(response?.message || "Failed to sign up");
+          // throw new Error("Failed to sign up");
         }
         return response.json();
       })
       .then((result) => {
         console.log("Signup successful:", result);
         // Handle successful signup, e.g., redirect or show a message
+        toast.success("OTP sent to your mail!", { id: toastId });
+
+        router.push(`/otp?email=${encodeURIComponent(data.email)}`);
       })
       .catch((error) => {
         console.error("Error during signup:", error);
+        toast.error(error.message || "Failed to signup.", { id: toastId });
+
         // Handle error, e.g., show an error message
       });
     console.log("Form submitted:", data);
-    // Add logic to handle form submission, e.g., API call
   };
   return (
     <>

@@ -4,18 +4,22 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useState } from "react";
+import { useToast } from "@/components/ToastProvider";
 
 const Signin = () => {
   const [data, setData] = useState({
     email: "",
     password: "",
   });
+  const toast = useToast();
 
   const handleGoogle = () => {
     window.location.href = "/api/auth/google";
   };
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const toastId = toast.loading("Submitting...");
+
     fetch("/api/auth/login", {
       method: "POST",
       headers: {
@@ -25,6 +29,10 @@ const Signin = () => {
     })
       .then((response) => {
         if (!response.ok) {
+          console.log("response.json()");
+
+          // toast.error(response, { id: toastId });
+
           throw new Error("Failed to sign up");
         }
         return response.json();
@@ -34,12 +42,15 @@ const Signin = () => {
           // Set cookies manually
           document.cookie = `access-token=${result.accessToken}; path=/dashboard;`;
           document.cookie = `refresh-token=${result.refreshToken}; path=/dashboard ;`;
-          console.log("Signup successful:", result);
+          console.log("Signin  successful:", result);
+          toast.success("Signed in Successfully", { id: toastId });
+
           // Redirect
           window.location.href = "/dashboard";
         }
       })
       .catch((error) => {
+        toast.error(error, { id: toastId });
         console.error("Error during signup:", error);
         // Handle error, e.g., show an error message
       });
