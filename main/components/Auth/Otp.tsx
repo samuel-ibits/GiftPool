@@ -1,6 +1,7 @@
 "use client";
 import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { useToast } from "@/components/ToastProvider";
 
 interface OtpVerifyProps {
   email: string;
@@ -8,16 +9,7 @@ interface OtpVerifyProps {
   onSuccess?: () => void;
 }
 
-// Mock toast hook for demo
-const useToast = () => ({
-  success: (msg: string) => console.log("✓", msg),
-  error: (msg: string) => console.log("✗", msg),
-  loading: (msg: string) => {
-    console.log("⏳", msg);
-    return Date.now().toString();
-  },
-  dismiss: (id: string) => console.log("Dismissed", id),
-});
+
 
 export default function OtpVerify({
   email = "user@example.com",
@@ -27,7 +19,7 @@ export default function OtpVerify({
   const [otp, setOtp] = useState(Array(length).fill(""));
   const [loading, setLoading] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const { success, error, loading: toastLoading, dismiss } = useToast();
+  const toast = useToast();
 
   const handleChange = (value: string, index: number) => {
     if (!/^\d*$/.test(value)) return;
@@ -66,11 +58,11 @@ export default function OtpVerify({
     const code = otp.join("");
 
     if (code.length !== length) {
-      error("Please enter the complete OTP code");
+      toast.error("Please enter the complete OTP code");
       return;
     }
 
-    const toastId = toastLoading("Verifying your code...");
+    const toastId = toast.loading("Verifying your code...");
     setLoading(true);
 
     try {
@@ -82,34 +74,59 @@ export default function OtpVerify({
 
       const data = await res.json();
 
-      dismiss(toastId);
+      toast.dismiss(toastId);
 
       // ❌ Backend rejected
       if (!res.ok) {
-        error(data?.message || "Invalid OTP code. Try again.");
+        toast.error(data?.message || "Invalid OTP code. Try again.");
         setOtp(Array(length).fill(""));
         inputRefs.current[0]?.focus();
         return;
       }
 
-      // ✔️ Success
-      success("Email verified successfully! 🎉");
+      // ✔️ toast.success
+      toast.success("Email verified toast.successfully! 🎉");
 
       // optional: set user context or redirect
       onSuccess?.();
     } catch (err) {
-      dismiss(toastId);
-      error("Something went wrong. Please try again.");
+      toast.dismiss(toastId);
+      toast.error("Something went wrong. Please try again.");
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleResend = () => {
-    success("New code sent to your email");
-    setOtp(Array(length).fill(""));
-    inputRefs.current[0]?.focus();
+  const handleResend = async () => {
+    const toastId = toast.loading("Sending new code...");
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/auth/resend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+      toast.dismiss(toastId);
+
+      if (!res.ok) {
+        toast.error(data?.message || "Failed to resend code. Please try again.");
+        return;
+      }
+
+      toast.success("New code sent to your email!");
+      setOtp(Array(length).fill(""));
+      inputRefs.current[0]?.focus();
+    } catch (err) {
+      toast.dismiss(toastId);
+      toast.error("Something went wrong. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -10,6 +10,7 @@ import "../globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 import ToasterContext from "../context/ToastContext";
+import { AuthProvider } from "@/context/AuthContext";
 
 export default function RootLayout({
   children,
@@ -19,18 +20,20 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`dark:bg-black ${inter.className}`}>
-        <ThemeProvider
-          enableSystem={false}
-          attribute="class"
-          defaultTheme="light"
-        >
-          <Lines />
-          {/* <Header /> */}
-          <ToasterContext />
-          {children}
-          {/* <Footer /> */}
-          <ScrollToTop />
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider
+            enableSystem={false}
+            attribute="class"
+            defaultTheme="light"
+          >
+            <Lines />
+            {/* <Header /> */}
+            <ToasterContext />
+            {children}
+            {/* <Footer /> */}
+            <ScrollToTop />
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );
