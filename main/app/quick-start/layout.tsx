@@ -1,197 +1,110 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { usePathname } from "next/navigation";
+import React from "react";
 import { ThemeProvider } from "next-themes";
 import { Inter } from "next/font/google";
 import "../globals.css";
-import Lines from "@/components/Lines";
-import ThemeToggler from "@/components/Header/ThemeToggler";
-import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { AuthProvider } from "@/context/AuthContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
-function DashboardSidebar() {
-  const pathname = usePathname();
-  const navigation = [
-    { name: "Dashboard", href: "/dashboard", icon: "📊" },
-    { name: "Stats", href: "/dashboard/stats", icon: "📈" },
-    { name: "Gifts", href: "/dashboard/gift", icon: "🎁" },
-    { name: "Analytics", href: "/dashboard/analytics", icon: "📉" },
-    { name: "Settings", href: "/dashboard/settings", icon: "⚙️" },
-  ];
-
-  return (
-    <nav className="mt-6">
-      {navigation.map((item) => {
-        const active = item.href === pathname;
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`flex items-center px-6 py-3 text-sm font-medium ${active
-              ? "border-r-2 border-blue-700 bg-blue-50 text-blue-700"
-              : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-              }`}
-          >
-            <span className="mr-3">{item.icon}</span>
-            {item.name}
-          </Link>
-        );
-      })}
-    </nav>
-  );
-}
-
-function DashboardHeader({
-  sidebarOpen,
-  setSidebarOpen,
-}: {
-  sidebarOpen: boolean;
-  setSidebarOpen: (open: boolean) => void;
-}) {
-  const { user, logout } = useAuth();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  return (
-    <header className="border-b bg-white shadow-sm">
-      <div className="flex items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-gray-500 focus:outline-none"
-          >
-            <svg
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-          </button>
-          <div>
-            <h2 className="text-xl font-semibold text-gray-800">
-              Welcome, {user?.name ?? "User"}
-            </h2>
-            <span className="text-sm text-gray-500 hidden sm:block">{user?.email}</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <ThemeToggler />
-          <div className="relative">
-            <button
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-500 font-semibold text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              {user?.name?.charAt(0).toUpperCase() ?? "U"}
-            </button>
-
-            {dropdownOpen && (
-              <>
-                <div
-                  className="fixed inset-0 z-10 h-full w-full cursor-default"
-                  onClick={() => setDropdownOpen(false)}
-                ></div>
-                <div className="absolute right-0 z-20 mt-2 w-48 rounded-md border border-gray-100 bg-white py-2 shadow-lg dark:border-gray-700 dark:bg-gray-800">
-                  <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                      {user?.name}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                      {user?.email}
-                    </p>
-                  </div>
-                  <Link
-                    href="/dashboard/settings"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
-                    onClick={() => setDropdownOpen(false)}
-                  >
-                    Profile
-                  </Link>
-                  <button
-                    onClick={() => {
-                      logout();
-                      window.location.href = "/signin";
-                    }}
-                    className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Logout
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-    </header>
-  );
-}
-
-export default function DashboardLayout({
+export default function QuickStartLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  useEffect(() => {
-    // Close sidebar on mobile by default
-    if (window.innerWidth < 768) {
-      setSidebarOpen(false);
-    }
-  }, []);
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`dark:bg-black ${inter.className}`}>
+      <body className={`${inter.className}`}>
         <AuthProvider>
           <ThemeProvider enableSystem={false} attribute="class">
-            <Lines />
+            <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
+              {/* Animated Background Elements */}
+              <div className="absolute inset-0">
+                {/* Floating Circles */}
+                <div className="absolute top-10 left-10 h-72 w-72 animate-blob rounded-full bg-purple-300 opacity-70 mix-blend-multiply blur-xl filter"></div>
+                <div className="animation-delay-2000 absolute top-0 right-10 h-72 w-72 animate-blob rounded-full bg-yellow-300 opacity-70 mix-blend-multiply blur-xl filter"></div>
+                <div className="animation-delay-4000 absolute -bottom-8 left-20 h-72 w-72 animate-blob rounded-full bg-pink-300 opacity-70 mix-blend-multiply blur-xl filter"></div>
 
-            <div className="flex min-h-screen bg-gray-100">
-              <div
-                className={`${sidebarOpen ? "w-64" : "w-0"
-                  } overflow-hidden bg-white shadow-lg transition-all duration-300`}
-              >
-                <div className="p-6">
-                  <Link href="/">
-                    <Image
-                      src="/images/logo/logo-dark.svg"
-                      alt="logo"
-                      width={119.03}
-                      height={30}
-                      className="hidden w-full dark:block"
-                    />
-                    <Image
-                      src="/images/logo/logo-light.svg"
-                      alt="logo"
-                      width={119.03}
-                      height={30}
-                      className="w-full dark:hidden"
-                    />
-                  </Link>
-                </div>
-                <DashboardSidebar />
+                {/* Gradient Orbs */}
+                <div className="absolute top-1/4 right-1/4 h-96 w-96 animate-pulse rounded-full bg-gradient-to-r from-blue-400 to-cyan-300 opacity-30 blur-3xl"></div>
+                <div className="animation-delay-3000 absolute bottom-1/4 left-1/3 h-80 w-80 animate-pulse rounded-full bg-gradient-to-r from-purple-400 to-pink-300 opacity-30 blur-3xl"></div>
+
+                {/* Moving Shapes */}
+                <div className="absolute top-1/2 left-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 animate-spin-slow rounded-full border-4 border-white opacity-10"></div>
+                <div className="animation-delay-1000 absolute top-1/3 right-1/3 h-48 w-48 animate-bounce-slow rounded-lg bg-white opacity-5"></div>
               </div>
 
-              <div className="flex flex-1 flex-col">
-                <DashboardHeader
-                  sidebarOpen={sidebarOpen}
-                  setSidebarOpen={setSidebarOpen}
-                />
-                <main className="flex-1 p-6">{children}</main>
+              {/* Content */}
+              <div className="relative z-10 flex min-h-screen items-center justify-center p-4">
+                {children}
               </div>
             </div>
           </ThemeProvider>
         </AuthProvider>
+
+        <style jsx global>{`
+          @keyframes blob {
+            0% {
+              transform: translate(0px, 0px) scale(1);
+            }
+            33% {
+              transform: translate(30px, -50px) scale(1.1);
+            }
+            66% {
+              transform: translate(-20px, 20px) scale(0.9);
+            }
+            100% {
+              transform: translate(0px, 0px) scale(1);
+            }
+          }
+
+          @keyframes spin-slow {
+            from {
+              transform: translate(-50%, -50%) rotate(0deg);
+            }
+            to {
+              transform: translate(-50%, -50%) rotate(360deg);
+            }
+          }
+
+          @keyframes bounce-slow {
+            0%, 100% {
+              transform: translateY(0);
+            }
+            50% {
+              transform: translateY(-20px);
+            }
+          }
+
+          .animate-blob {
+            animation: blob 7s infinite;
+          }
+
+          .animation-delay-2000 {
+            animation-delay: 2s;
+          }
+
+          .animation-delay-3000 {
+            animation-delay: 3s;
+          }
+
+          .animation-delay-4000 {
+            animation-delay: 4s;
+          }
+
+          .animation-delay-1000 {
+            animation-delay: 1s;
+          }
+
+          .animate-spin-slow {
+            animation: spin-slow 20s linear infinite;
+          }
+
+          .animate-bounce-slow {
+            animation: bounce-slow 3s ease-in-out infinite;
+          }
+        `}</style>
       </body>
     </html>
   );

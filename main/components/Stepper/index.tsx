@@ -411,7 +411,7 @@ export default function GiftingStepper() {
                 Processing...
               </>
             ) : (
-              currentStep === 3 ? "Pay Now" : "Next"
+              (currentStep === 3 ? "Pay Now" : "Next")
             )}
           </button>
         ) : (

@@ -22,7 +22,7 @@ interface ClaimData {
 
 export default function ParticipatePage() {
   const params = useParams();
-  const slug = params?.id as string;
+  const slug = params?.slug as string;
 
   const [step, setStep] = useState<"lookup" | "claim" | "done">("lookup");
   const [email, setEmail] = useState("");
@@ -369,16 +369,15 @@ export default function ParticipatePage() {
                 )
               }
               className={`flex-1 rounded-md px-4 py-3 text-white transition-colors duration-200
-    ${
-      loading ||
-      !(
-        claim.phone?.trim() ||
-        claim.wallet?.trim() ||
-        claim.accountNumber?.trim()
-      )
-        ? "cursor-not-allowed bg-gray-400"
-        : "bg-green-600 hover:bg-green-700"
-    }`}
+    ${loading ||
+                  !(
+                    claim.phone?.trim() ||
+                    claim.wallet?.trim() ||
+                    claim.accountNumber?.trim()
+                  )
+                  ? "cursor-not-allowed bg-gray-400"
+                  : "bg-green-600 hover:bg-green-700"
+                }`}
             >
               {loading ? "Submitting..." : "Submit Claim"}
             </button>

@@ -42,6 +42,7 @@ export default function GiftDetailsPage() {
   const router = useRouter();
   const [gift, setGift] = useState<Gift | null>(null);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const fetchGift = async () => {
@@ -205,6 +206,46 @@ export default function GiftDetailsPage() {
                 {gift.giftBag.random.enabled ? '✓ Enabled' : '✗ Disabled'}
               </p>
             </div>
+          </div>
+        </div>
+
+        <div className="mb-6 rounded-lg border border-indigo-200 bg-indigo-50 p-6 dark:border-indigo-800 dark:bg-indigo-900/20">
+          <h2 className="mb-3 text-xl font-semibold text-gray-700 dark:text-gray-300">Share This Gift</h2>
+          <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+            Share this link with friends and family to participate in this gift:
+          </p>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <input
+              type="text"
+              readOnly
+              value={`${typeof window !== 'undefined' ? window.location.origin : ''}/dashboard/gift/participate/${gift.slug}`}
+              className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
+            />
+            <button
+              onClick={() => {
+                const link = `${window.location.origin}/dashboard/gift/participate/${gift.slug}`;
+                navigator.clipboard.writeText(link);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              }}
+              className="flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-3 text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              {copied ? (
+                <>
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copy Link
+                </>
+              )}
+            </button>
           </div>
         </div>
 

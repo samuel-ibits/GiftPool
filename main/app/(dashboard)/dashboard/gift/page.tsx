@@ -16,7 +16,7 @@ interface GiftType {
 }
 
 async function getGifts() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const token = cookieStore.get("access-token")?.value;
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/gift/list/me`,
