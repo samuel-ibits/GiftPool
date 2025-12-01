@@ -45,8 +45,12 @@ const Signin = () => {
           console.log("Signin  successful:", result);
           toast.success("Signed in Successfully", { id: toastId });
 
-          // Redirect
-          window.location.href = "/dashboard";
+          // Redirect based on whether user has gifts
+          if (result.hasGifts) {
+            window.location.href = "/dashboard";
+          } else {
+            window.location.href = "/quick-start";
+          }
         }
       })
       .catch((error) => {

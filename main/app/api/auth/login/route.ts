@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { signAccessToken, signRefreshToken } from "@/lib/jwt";
 import bcrypt from "bcryptjs";
 import { User } from "@/lib/models/User";
+import Gift from "@/lib/models/Gift";
 import dbConnect from "@/lib/db";
 import { sendVerificationEmail } from "@/lib/mailer";
 import { generateVerificationCode } from "@/lib/utils";
@@ -67,6 +68,10 @@ export async function POST(req: NextRequest) {
   user.refreshTokenJTI = newJTI;
   await user.save();
 
+  // Check if user has any gifts
+  const giftCount = await Gift.countDocuments({ user: user._id });
+  const hasGifts = giftCount > 0;
+
   const accessCookie = `access-token=${accessToken}; HttpOnly; Path=/; Max-Age=${60 * 60 * 24 * 7
     }; ${process.env.NODE_ENV === "production" ? "Secure; SameSite=Lax;" : ""}`;
 
@@ -74,8 +79,10 @@ export async function POST(req: NextRequest) {
     }; ${process.env.NODE_ENV === "production" ? "Secure; SameSite=Lax;" : ""}`;
 
   const response = new NextResponse(JSON.stringify({
-    success: true, refreshToken,
+    success: true,
+    refreshToken,
     accessToken,
+    hasGifts,
   }), {
     status: 200,
 

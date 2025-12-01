@@ -168,36 +168,6 @@ export default function GiftingStepper() {
   console.log("token", token);
   return (
     <div className="mx-auto max-w-4xl p-6">
-      {isLoading && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
-          <div className="h-12 w-12 animate-spin rounded-full border-t-4 border-indigo-600 border-opacity-75"></div>
-        </div>
-      )}
-      {/* Stepper Header */}
-      <ol className="mb-8 flex flex-col items-center justify-between space-y-4 sm:flex-row sm:space-y-0">
-        {steps.map((step, index) => (
-          <li
-            key={step.id}
-            onClick={() => setCurrentStep(step.id)}
-            className={`flex cursor-pointer items-center ${
-              index + 1 <= currentStep ? "text-indigo-600" : "text-gray-400"
-            }`}
-          >
-            <span
-              className={`flex h-8 w-8 items-center justify-center rounded-full border-2 ${
-                index + 1 <= currentStep
-                  ? "border-indigo-600 bg-indigo-600 text-white"
-                  : "border-gray-300"
-              }`}
-            >
-              {index + 1}
-            </span>
-            <span className="ml-3 text-xs sm:text-sm md:text-base">
-              {step.title}
-            </span>
-          </li>
-        ))}
-      </ol>
 
       {/* Stepper Content */}
       <div className="rounded-lg border bg-white p-6 shadow-sm">
@@ -362,7 +332,7 @@ export default function GiftingStepper() {
                   onClick={() => {
                     navigator.clipboard.writeText(
                       `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/gift/participate/` +
-                        giftLink,
+                      giftLink,
                     );
                     setCopied(true); // Update feedback
                     setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
@@ -419,7 +389,7 @@ export default function GiftingStepper() {
         <button
           onClick={() => setCurrentStep((prev) => Math.max(1, prev - 1))}
           className="rounded-md bg-gray-100 px-6 py-2 disabled:opacity-50"
-          disabled={currentStep === 1}
+          disabled={currentStep === 1 || isLoading}
         >
           Previous
         </button>
@@ -432,9 +402,17 @@ export default function GiftingStepper() {
                 setCurrentStep((prev) => Math.min(steps.length, prev + 1));
               }
             }}
-            className="rounded-md bg-indigo-600 px-6 py-2 text-white"
+            className="flex items-center gap-2 rounded-md bg-indigo-600 px-6 py-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={isLoading}
           >
-            {currentStep === 3 ? "Pay Now" : "Next"}
+            {isLoading && currentStep === 3 ? (
+              <>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                Processing...
+              </>
+            ) : (
+              currentStep === 3 ? "Pay Now" : "Next"
+            )}
           </button>
         ) : (
           <button
