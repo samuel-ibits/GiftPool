@@ -14,6 +14,12 @@ interface User {
   name: string;
   email: string;
   avatar?: string;
+  firstName?: string;
+  lastName?: string;
+  bio?: string;
+  address?: string;
+  phoneNumber?: string;
+  role?: string;
   [key: string]: any;
 }
 
@@ -27,8 +33,8 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   token: null,
   user: null,
-  setUser: () => {},
-  logout: () => {},
+  setUser: () => { },
+  logout: () => { },
 });
 
 export const useAuth = () => useContext(AuthContext);
