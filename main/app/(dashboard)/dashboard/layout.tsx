@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ThemeProvider } from "next-themes";
 import { Inter } from "next/font/google";
@@ -161,9 +162,22 @@ export default function DashboardLayout({
                   } overflow-hidden bg-white shadow-lg transition-all duration-300`}
               >
                 <div className="p-6">
-                  <h1 className="text-2xl font-bold text-gray-800">
-                    Dashboard
-                  </h1>
+                  <Link href="/">
+                    <Image
+                      src="/images/logo/logo-dark.svg"
+                      alt="logo"
+                      width={119.03}
+                      height={30}
+                      className="hidden w-full dark:block"
+                    />
+                    <Image
+                      src="/images/logo/logo-light.svg"
+                      alt="logo"
+                      width={119.03}
+                      height={30}
+                      className="w-full dark:hidden"
+                    />
+                  </Link>
                 </div>
                 <DashboardSidebar />
               </div>
