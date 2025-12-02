@@ -106,7 +106,41 @@ export default function GiftDetailsPage() {
       </button>
 
       <div className="rounded-lg border bg-white p-6 shadow-md">
-        <h1 className="mb-4 text-3xl font-bold text-gray-800">{gift.title}</h1>
+        <div className="mb-4 flex items-center justify-between">
+          <h1 className="text-3xl font-bold text-gray-800">{gift.title}</h1>
+          <div className="flex gap-2">
+            <button
+              onClick={() => router.push(`/dashboard/gift/edit/${gift.slug}`)}
+              className="rounded-lg bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
+            >
+              Edit
+            </button>
+            <button
+              onClick={async () => {
+                if (confirm("Are you sure you want to delete this gift?")) {
+                  try {
+                    const res = await fetch(`/api/gift/delete/${gift.slug}`, {
+                      method: "DELETE",
+                    });
+                    if (res.ok) {
+                      alert("Gift deleted successfully!");
+                      router.push("/dashboard/gift");
+                    } else {
+                      const data = await res.json();
+                      alert(data.message || "Failed to delete gift");
+                    }
+                  } catch (error) {
+                    console.error("Error deleting gift:", error);
+                    alert("An error occurred while deleting the gift");
+                  }
+                }
+              }}
+              className="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
 
         <img
           src={gift.image}
