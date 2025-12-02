@@ -3,7 +3,7 @@ import dbConnect from "@/lib/db";
 import Gift from "@/lib/models/Gift";
 import { notFound, serverError, ok } from "@/lib/response";
 import GiftClaim from "@/lib/models/GiftClaim";
-
+// import { splitEngine } from "@/lib/splitEngine";
 export async function POST(request: Request) {
     try {
         const { email, phone, wallet, bankName, accountNumber } = await request.json();
@@ -30,7 +30,8 @@ export async function POST(request: Request) {
         if (!result) {
             return notFound("Gift not found or already claimed");
         }
-
+        //proceed to split engine
+        // await splitEngine(result);
         return ok(result, "Claim submitted successfully");
     } catch (error) {
         console.error("Claim submission error:", error);
