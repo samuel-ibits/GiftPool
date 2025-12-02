@@ -5,11 +5,11 @@ import Gift from "@/lib/models/Gift";
 
 export async function PUT(
     req: NextRequest,
-    { params }: { params: { slug: string } }
+    { params }: { params: Promise<{ slug: string }> }
 ) {
     try {
         const decoded = requireAuth(req);
-        const { slug } = params;
+        const { slug } = await params;
         const body = await req.json();
 
         await dbConnect();
