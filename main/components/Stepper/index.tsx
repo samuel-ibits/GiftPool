@@ -307,6 +307,7 @@ export default function GiftingStepper() {
               isOpen={modalOpen}
               onClose={() => setModalOpen(false)}
               authorizationUrl={paymentUrl}
+              giftSlug={slug}
             />
           </div>
         )}
