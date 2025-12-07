@@ -68,7 +68,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
   async function updateGiftStatus(slug: string) {
     const res = await fetch("/api/gift/update/" + slug, {
-      method: "POST",
+      method: "PUT",
       body: JSON.stringify({
         status: "funded",
       }),

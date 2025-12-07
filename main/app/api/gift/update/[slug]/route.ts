@@ -41,6 +41,8 @@ export async function PUT(
             "duration",
             "dispense",
             "giftBag",
+            'status',
+            'verified'
         ];
 
         allowedFields.forEach((field) => {

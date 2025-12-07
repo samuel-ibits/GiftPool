@@ -32,6 +32,7 @@ type Gift = {
   duration: number;
   dispense: string;
   verified: boolean;
+  status: string;
   giftBag: GiftBag;
   createdAt: string;
   updatedAt: string;
@@ -187,6 +188,13 @@ export default function GiftDetailsPage() {
             <p className="text-sm text-gray-500">Verified Status</p>
             <p className={`text-lg font-semibold ${gift.verified ? 'text-green-600' : 'text-yellow-600'}`}>
               {gift.verified ? '✓ Verified' : '⏳ Pending'}
+            </p>
+          </div>
+
+          <div className="rounded-lg bg-gray-50 p-4">
+            <p className="text-sm text-gray-500">Status</p>
+            <p className={`text-lg font-semibold ${gift.status === 'funded' ? 'text-green-600' : 'text-yellow-600'}`}>
+              {gift.status}
             </p>
           </div>
         </div>
