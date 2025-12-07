@@ -223,7 +223,7 @@ export default function GiftingStepper() {
               <input
                 type="number"
                 className=" h-12 w-full rounded-md border px-4"
-                placeholder="Enter gift amount"
+                placeholder="Enter total amount you want to spend"
                 value={amount !== null ? amount : ""}
                 onChange={(e) => setAmount(Number(e.target.value))}
               />
@@ -267,12 +267,12 @@ export default function GiftingStepper() {
             <h2 className="mb-4 text-xl font-semibold">Timing</h2>
             <div className="mb-4">
               <label className="mb-2 block text-sm font-medium">
-                Gifting Duration In Days
+                How long will the gift last?
               </label>
               <input
                 type="number"
                 className="h-12 w-full rounded-md border px-4"
-                placeholder="Enter gifting duration"
+                placeholder="Enter gifting duration in days"
                 onChange={handleDurationChange}
               />
               {duration && (
@@ -281,7 +281,7 @@ export default function GiftingStepper() {
             </div>
             <div>
               <label className="mb-2 block text-sm font-medium">
-                Dispense Time
+                When should we despense your gift?
               </label>
               <select
                 className="mb-4 h-12 w-full rounded-md border px-4"

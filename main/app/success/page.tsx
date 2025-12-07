@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { CheckCircle } from "lucide-react";
+// call api to update gift status
 
 export default function GiftSuccessPage() {
   return (

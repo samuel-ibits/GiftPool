@@ -66,9 +66,30 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     };
   }, [isOpen]);
 
+  async function updateGiftStatus(slug: string) {
+    const res = await fetch("/api/gift/update/" + slug, {
+      method: "POST",
+      body: JSON.stringify({
+        status: "funded",
+      }),
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    console.log("Update result:", data);
+  }
+
   useEffect(() => {
     if (paymentSuccess && giftSlug) {
+      // call api to update gift status
+      updateGiftStatus(giftSlug);
+
       // Redirect to gift details after 2 seconds
+
       const timer = setTimeout(() => {
         router.push(`/dashboard/gift/details/${giftSlug}`);
         onClose();

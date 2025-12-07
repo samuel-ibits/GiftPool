@@ -43,7 +43,11 @@ const giftSchema = new Schema(
             type: Boolean,
             default: false,
         },
-
+        status: {
+            type: String,
+            default: "pending",
+            enum: ["pending", "funded", "dispensed", "cancelled", "failed"],
+        },
         giftBag: {
             airtime: {
                 enabled: { type: Boolean, default: false },

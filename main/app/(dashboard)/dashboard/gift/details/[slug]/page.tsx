@@ -252,12 +252,12 @@ export default function GiftDetailsPage() {
             <input
               type="text"
               readOnly
-              value={`${typeof window !== 'undefined' ? window.location.origin : ''}/dashboard/gift/participate/${gift.slug}`}
+              value={`${typeof window !== 'undefined' ? window.location.origin : ''}/quick-start/gift/participate/${gift.slug}`}
               className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
             />
             <button
               onClick={() => {
-                const link = `${window.location.origin}/dashboard/gift/participate/${gift.slug}`;
+                const link = `${window.location.origin}/quick-start/gift/participate/${gift.slug}`;
                 navigator.clipboard.writeText(link);
                 setCopied(true);
                 setTimeout(() => setCopied(false), 2000);

@@ -216,7 +216,7 @@ export default function ParticipatePage() {
   return (
     <div className="mx-auto max-w-md rounded-lg bg-white p-6 shadow-lg">
       <h1 className="mb-6 text-center text-2xl font-bold text-gray-800">
-        🎁 Participate in Gift Draw
+        🎁 Quick Claim
       </h1>
 
       {/* Error Display */}

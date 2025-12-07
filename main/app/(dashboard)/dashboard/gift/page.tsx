@@ -37,12 +37,11 @@ async function getGifts() {
   const data = await res.json();
   return data.data || [];
 }
-
 export default async function GiftPage() {
   const gifts: GiftType[] = await getGifts();
   console.log(gifts);
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
+    <div className="mx-auto max-w-7xl px-4 py-10">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Gift List</h1>
         <Link
@@ -53,7 +52,7 @@ export default async function GiftPage() {
         </Link>
       </div>
 
-      <ul className="grid gap-6">
+      <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {gifts.map((gift) => (
           <li key={gift.slug} className="rounded border p-4 shadow">
             <Link href={`/dashboard/gift/details/${gift.slug}`}>
