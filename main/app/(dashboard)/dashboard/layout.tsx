@@ -17,9 +17,8 @@ function DashboardSidebar() {
   const pathname = usePathname();
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: "📊" },
-    { name: "Stats", href: "/dashboard/stats", icon: "📈" },
     { name: "Gifts", href: "/dashboard/gift", icon: "🎁" },
-    { name: "Analytics", href: "/dashboard/analytics", icon: "📉" },
+    { name: "Contributions", href: "/dashboard/contribution", icon: "💰" },
     { name: "Settings", href: "/dashboard/settings", icon: "⚙️" },
   ];
 
