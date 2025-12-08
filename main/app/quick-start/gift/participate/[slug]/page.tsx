@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { Gift, Share2 } from "lucide-react";
+import { Gift, Share2, Lock } from "lucide-react";
 
 interface GiftData {
   giftBag: any;
@@ -13,6 +13,15 @@ interface GiftData {
   category?: string;
   duration: number;
   imageUrl?: string;
+  expectedParticipant?: {
+    name?: string;
+    email?: string;
+    nin?: string;
+    bvn?: string;
+    secretCode?: string;
+    choice?: string[];
+    allowRepeat?: boolean;
+  };
 }
 
 interface ClaimData {
@@ -22,17 +31,30 @@ interface ClaimData {
   bankName: string;
 }
 
+interface VerificationData {
+  name: string;
+  email: string;
+  nin: string;
+  bvn: string;
+  secretCode: string;
+}
+
 export default function ParticipatePage() {
   const params = useParams();
   const slug = params?.slug as string;
 
   const [step, setStep] = useState<"envelope" | "verify" | "reveal" | "claim" | "done">("envelope");
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
   const [gift, setGift] = useState<GiftData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [envelopeOpened, setEnvelopeOpened] = useState(false);
+  const [verification, setVerification] = useState<VerificationData>({
+    name: "",
+    email: "",
+    nin: "",
+    bvn: "",
+    secretCode: "",
+  });
   const [claim, setClaim] = useState<ClaimData>({
     phone: "",
     wallet: "",
@@ -74,9 +96,29 @@ export default function ParticipatePage() {
     return emailRegex.test(email);
   };
 
-  const validatePhone = (phone: string) => {
-    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-    return phoneRegex.test(phone.replace(/\s/g, ""));
+  const getRequiredFields = () => {
+    if (!gift?.expectedParticipant?.choice) {
+      return ["name", "email"];
+    }
+    return gift.expectedParticipant.choice;
+  };
+
+  const validateField = (field: string, value: string) => {
+    if (!value.trim()) return false;
+
+    if (field === "email") {
+      return validateEmail(value);
+    }
+
+    if (field === "nin" && value.length !== 11) {
+      return false;
+    }
+
+    if (field === "bvn" && value.length !== 11) {
+      return false;
+    }
+
+    return true;
   };
 
   const handleEnvelopeOpen = () => {
@@ -89,31 +131,35 @@ export default function ParticipatePage() {
   const handleVerify = async () => {
     setError("");
 
-    if (!name.trim()) {
-      setError("Please enter your name");
-      return;
-    }
+    const requiredFields = getRequiredFields();
 
-    if (!email.trim()) {
-      setError("Please enter your email");
-      return;
-    }
-
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address");
-      return;
+    // Validate all required fields
+    for (const field of requiredFields) {
+      const value = verification[field as keyof VerificationData];
+      if (!validateField(field, value)) {
+        const fieldLabels: Record<string, string> = {
+          name: "Name",
+          email: "Email",
+          nin: "NIN (11 digits)",
+          bvn: "BVN (11 digits)",
+          secretCode: "Secret Code"
+        };
+        setError(`Please enter a valid ${fieldLabels[field]}`);
+        return;
+      }
     }
 
     setLoading(true);
 
     try {
+      const payload: any = { slug };
+      requiredFields.forEach(field => {
+        payload[field] = verification[field as keyof VerificationData].trim();
+      });
+
       const res = await fetch("/api/gift/check", {
         method: "POST",
-        body: JSON.stringify({
-          email: email.trim().toLowerCase(),
-          name: name.trim(),
-          slug: slug,
-        }),
+        body: JSON.stringify(payload),
         headers: { "Content-Type": "application/json" },
       });
 
@@ -127,7 +173,7 @@ export default function ParticipatePage() {
         setStep("reveal");
       } else {
         setError(
-          "No gift found for this user. Please check your name and email.",
+          "No gift found or verification failed. Please check your details.",
         );
       }
     } catch (err) {
@@ -143,19 +189,25 @@ export default function ParticipatePage() {
     setLoading(true);
 
     try {
+      const payload: any = {
+        slug,
+        phone: claim.phone.trim(),
+        wallet: claim.wallet.trim(),
+        bank: {
+          accountNumber: claim.accountNumber.trim(),
+          bankName: claim.bankName.trim(),
+        },
+      };
+
+      // Include verification data
+      const requiredFields = getRequiredFields();
+      requiredFields.forEach(field => {
+        payload[field] = verification[field as keyof VerificationData].trim();
+      });
+
       const res = await fetch("/api/gift/claim", {
         method: "POST",
-        body: JSON.stringify({
-          email: email.trim().toLowerCase(),
-          name: name.trim(),
-          phone: claim.phone.trim(),
-          wallet: claim.wallet.trim(),
-          bank: {
-            accountNumber: claim.accountNumber.trim(),
-            bankName: claim.bankName.trim(),
-          },
-          slug: slug,
-        }),
+        body: JSON.stringify(payload),
         headers: { "Content-Type": "application/json" },
       });
 
@@ -201,8 +253,13 @@ export default function ParticipatePage() {
 
   const resetForm = () => {
     setStep("envelope");
-    setEmail("");
-    setName("");
+    setVerification({
+      name: "",
+      email: "",
+      nin: "",
+      bvn: "",
+      secretCode: "",
+    });
     setGift(null);
     setError("");
     setEnvelopeOpened(false);
@@ -212,6 +269,61 @@ export default function ParticipatePage() {
       accountNumber: "",
       bankName: "",
     });
+  };
+
+  const renderVerificationField = (field: string) => {
+    const fieldConfig: Record<string, { label: string; type: string; placeholder: string; maxLength?: number }> = {
+      name: {
+        label: "Full Name",
+        type: "text",
+        placeholder: "Enter your full name"
+      },
+      email: {
+        label: "Email Address",
+        type: "email",
+        placeholder: "Enter your email address"
+      },
+      nin: {
+        label: "National Identity Number (NIN)",
+        type: "text",
+        placeholder: "Enter your 11-digit NIN",
+        maxLength: 11
+      },
+      bvn: {
+        label: "Bank Verification Number (BVN)",
+        type: "text",
+        placeholder: "Enter your 11-digit BVN",
+        maxLength: 11
+      },
+      secretCode: {
+        label: "Secret Code",
+        type: "text",
+        placeholder: "Enter the secret code provided"
+      }
+    };
+
+    const config = fieldConfig[field];
+    if (!config) return null;
+
+    return (
+      <div key={field}>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          {config.label} *
+        </label>
+        <input
+          type={config.type}
+          className="w-full rounded-lg border border-gray-300 p-3 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
+          value={verification[field as keyof VerificationData]}
+          onChange={(e) => setVerification(prev => ({
+            ...prev,
+            [field]: e.target.value
+          }))}
+          placeholder={config.placeholder}
+          maxLength={config.maxLength}
+          disabled={loading}
+        />
+      </div>
+    );
   };
 
   return (
@@ -228,7 +340,6 @@ export default function ParticipatePage() {
             >
               <div className="bg-white rounded-2xl shadow-2xl p-12 hover:shadow-3xl transition-shadow">
                 <div className="relative">
-                  {/* Envelope */}
                   <div className={`transition-transform duration-500 ${envelopeOpened ? "-translate-y-12" : ""
                     }`}>
                     <div className="w-48 h-32 mx-auto bg-gradient-to-br from-red-400 to-pink-500 rounded-lg relative overflow-hidden shadow-lg">
@@ -260,12 +371,17 @@ export default function ParticipatePage() {
         {/* Verification Screen */}
         {step === "verify" && (
           <div className="bg-white rounded-2xl shadow-xl p-8 animate-fadeIn">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">
-              Confirm Your Identity
-            </h2>
-            <p className="text-gray-600 text-center mb-6">
-              Please verify you're the gift recipient
-            </p>
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Lock className="w-8 h-8 text-purple-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                Verify Your Identity
+              </h2>
+              <p className="text-gray-600">
+                Please confirm you're the gift recipient
+              </p>
+            </div>
 
             {error && (
               <div className="mb-4 rounded-lg border border-red-400 bg-red-50 p-3 text-red-700 text-sm">
@@ -274,38 +390,12 @@ export default function ParticipatePage() {
             )}
 
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name *
-                </label>
-                <input
-                  type="text"
-                  className="w-full rounded-lg border border-gray-300 p-3 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter your full name"
-                  disabled={loading}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address *
-                </label>
-                <input
-                  type="email"
-                  className="w-full rounded-lg border border-gray-300 p-3 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email address"
-                  disabled={loading}
-                />
-              </div>
+              {getRequiredFields().map(field => renderVerificationField(field))}
 
               <button
                 onClick={handleVerify}
-                disabled={loading || !name.trim() || !email.trim()}
-                className="w-full rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-3 text-white font-semibold transition-all duration-200 hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                disabled={loading}
+                className="w-full rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-3 text-white font-semibold transition-all duration-200 hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 mt-6"
               >
                 {loading ? "Verifying..." : "Verify & Continue"}
               </button>
@@ -316,7 +406,6 @@ export default function ParticipatePage() {
         {/* Gift Reveal Screen */}
         {step === "reveal" && gift && (
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden animate-fadeIn">
-            {/* Gift Image */}
             {gift.imageUrl && (
               <div className="w-full h-48 bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
                 <img

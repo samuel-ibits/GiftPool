@@ -63,11 +63,25 @@ const giftSchema = new Schema(
             },
             bank: {
                 enabled: { type: Boolean, default: false },
-                banks: [{ type: String }], // optional: GTB, Access, etc.
+                banks: [{ type: String }],
+                bankCode: [{ type: String }],
             },
             random: {
                 enabled: { type: Boolean, default: true }, // If true, pick randomly from other enabled types
-            }
+            },
+            allowParticipantPick: { type: Boolean, default: false },
+        },
+        expectedParticipant: {
+            name: { type: String },
+            email: { type: String },
+            nin: { type: String },
+            bvn: { type: String },
+            secretCode: { type: String },
+            choice: {
+                type: [{ type: String, enum: ["name", "email", "nin", "bvn", "secretCode"] }],
+                default: ["name", "email"],
+            },
+            allowRepeat: { type: Boolean, default: false },
         },
     },
     { timestamps: true }
