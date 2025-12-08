@@ -41,6 +41,7 @@ export async function PUT(
             "duration",
             "dispense",
             "giftBag",
+            "expectedParticipant",
             'status',
             'verified'
         ];
