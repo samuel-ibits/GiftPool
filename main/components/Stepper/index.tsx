@@ -167,10 +167,38 @@ export default function GiftingStepper() {
   };
   console.log("token", token);
   return (
-    <div className="mx-auto max-w-4xl p-6">
+    <div className="mx-auto max-w-4xl p-4 sm:p-6">
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+          <div className="h-12 w-12 animate-spin rounded-full border-t-4 border-indigo-600 border-opacity-75"></div>
+        </div>
+      )}
+      {/* Stepper Header */}
+      <ol className="mb-8 flex w-full items-center justify-between space-x-2 sm:space-x-4">
+        {steps.map((step, index) => (
+          <li
+            key={step.id}
+            onClick={() => setCurrentStep(step.id)}
+            className={`flex cursor-pointer items-center ${index + 1 <= currentStep ? "text-indigo-600" : "text-gray-400"
+              }`}
+          >
+            <span
+              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 ${index + 1 <= currentStep
+                ? "border-indigo-600 bg-indigo-600 text-white"
+                : "border-gray-300"
+                }`}
+            >
+              {index + 1}
+            </span>
+            <span className="ml-3 hidden text-xs sm:block sm:text-sm md:text-base">
+              {step.title}
+            </span>
+          </li>
+        ))}
+      </ol>
 
       {/* Stepper Content */}
-      <div className="rounded-lg border bg-white p-6 shadow-sm">
+      <div className="rounded-lg border bg-white p-4 shadow-sm sm:p-6">
         {currentStep === 1 && (
           <div>
             <h2 className="mb-4 text-xl font-semibold">Gift Details</h2>
@@ -179,10 +207,10 @@ export default function GiftingStepper() {
                 <img
                   src={imagePreview}
                   alt="Preview"
-                  className="mb-4 h-64 w-full rounded-md object-cover"
+                  className="mb-4 h-48 w-full rounded-md object-cover sm:h-64"
                 />
               ) : (
-                <div className="flex h-64 w-full items-center justify-center rounded-md bg-gray-100">
+                <div className="flex h-48 w-full items-center justify-center rounded-md bg-gray-100 sm:h-64">
                   <span className="text-gray-500">Image Preview</span>
                 </div>
               )}

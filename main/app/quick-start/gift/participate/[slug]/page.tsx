@@ -212,7 +212,7 @@ export default function ParticipatePage() {
       });
 
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
+        const errorData = await res.json().catch((e) => (console.log(e)));
         throw new Error(
           errorData.message || `HTTP error! status: ${res.status}`,
         );

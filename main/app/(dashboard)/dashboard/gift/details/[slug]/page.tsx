@@ -175,7 +175,7 @@ export default function GiftDetailsPage() {
                     gift.status === 'cancelled' ? 'bg-red-100 text-red-700' :
                       'bg-yellow-100 text-yellow-700'
                   }`}>
-                  {gift.status.charAt(0).toUpperCase() + gift.status.slice(1)}
+                  {gift?.status?.charAt(0).toUpperCase() + gift?.status?.slice(1)}
                 </span>
               </div>
               <p className="text-gray-500 text-sm">Gift ID: {gift._id}</p>
