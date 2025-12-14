@@ -42,21 +42,21 @@ export async function GET(req: NextRequest) {
 
 /**
  * Manual trigger endpoint (for testing)
- * POST with { giftId: "..." } to process a specific gift
+ * POST with { giftSlug: "..." } to process a specific gift
  */
 export async function POST(req: NextRequest) {
     try {
-        const { giftId } = await req.json();
+        const { giftSlug } = await req.json();
 
-        if (!giftId) {
+        if (!giftSlug) {
             return NextResponse.json(
-                { error: "giftId is required" },
+                { error: "giftSlug is required" },
                 { status: 400 }
             );
         }
 
         const { processSingleGift } = await import("@/lib/splitEngine");
-        const result = await processSingleGift(giftId);
+        const result = await processSingleGift(giftSlug);
 
         return NextResponse.json({
             success: true,

@@ -6,7 +6,7 @@ import GiftClaim from "./models/GiftClaim";
  * Split Engine - Processes gifts that have reached their duration
  * and distributes the amount among claims
  */
-export async function splitEngine(slug: string) {
+export async function splitEngine(slug?: string) {
     try {
         await dbConnect();
 
@@ -15,10 +15,12 @@ export async function splitEngine(slug: string) {
         // 2. Not yet processed (we'll add a 'processed' field)
         const now = new Date();
 
-        const gifts = await Gift.find({
-            verified: true,
-            slug
-        });
+        const query: any = { verified: true };
+        if (slug) {
+            query.slug = slug;
+        }
+
+        const gifts = await Gift.find(query);
 
         const results = {
             processed: 0,
@@ -104,11 +106,11 @@ export async function splitEngine(slug: string) {
 /**
  * Manual trigger for testing - processes a specific gift
  */
-export async function processSingleGift(giftId: string) {
+export async function processSingleGift(slug: string) {
     try {
         await dbConnect();
 
-        const gift = await Gift.findById(giftId);
+        const gift = await Gift.findOne({ slug });
         if (!gift) {
             throw new Error("Gift not found");
         }
