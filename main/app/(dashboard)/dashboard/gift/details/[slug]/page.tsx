@@ -253,8 +253,8 @@ export default function GiftDetailsPage() {
               <Calendar className="w-6 h-6 text-blue-600" />
               <p className="text-sm text-gray-500 font-medium">Duration</p>
             </div>
-            <p className="text-3xl font-bold text-blue-600">{gift.duration}</p>
-            <p className="text-xs text-gray-500 mt-1">days</p>
+            <p className="text-3xl font-bold text-blue-600">{gift.duration || 1}</p>
+            <p className="text-xs text-gray-500 mt-1">{gift.duration == 1 ? "day" : "days"}</p>
           </div>
 
           <div className="rounded-xl bg-white p-6 shadow-lg border-l-4 border-orange-500">

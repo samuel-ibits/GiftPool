@@ -118,7 +118,31 @@ export async function POST(request: Request) {
             return badRequest("This gift has reached maximum claims");
         }
 
-        // Step 8: Return success with gift data
+        // Step 8: Create or retrieve pending GiftClaim
+        const claimData = {
+            giftId: gift._id,
+            giftName: gift.title,
+            email: body.email?.trim().toLowerCase() || "",
+            name: body.name?.trim() || "Participant",
+            claimed: false,
+            claimDetails: {
+                secretCode: body.secretCode?.trim(),
+                nin: body.nin?.trim(),
+                bvn: body.bvn?.trim(),
+                name: body.name?.trim(),
+            }
+        };
+
+        // If we have an email (mandatory for claim record), ensure record exists
+        if (claimData.email) {
+            await GiftClaim.findOneAndUpdate(
+                { email: claimData.email, giftId: gift._id, claimed: false },
+                { $set: claimData },
+                { upsert: true, new: true }
+            );
+        }
+
+        // Step 9: Return success with gift data
         return ok({
             message: "Verification successful",
             gift: {

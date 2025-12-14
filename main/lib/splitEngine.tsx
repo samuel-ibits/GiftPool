@@ -6,7 +6,7 @@ import GiftClaim from "./models/GiftClaim";
  * Split Engine - Processes gifts that have reached their duration
  * and distributes the amount among claims
  */
-export async function splitEngine() {
+export async function splitEngine(slug: string) {
     try {
         await dbConnect();
 
@@ -16,7 +16,8 @@ export async function splitEngine() {
         const now = new Date();
 
         const gifts = await Gift.find({
-            verified: true, // Only process verified/paid gifts
+            verified: true,
+            slug
         });
 
         const results = {

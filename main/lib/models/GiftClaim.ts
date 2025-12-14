@@ -37,6 +37,10 @@ const GiftClaimSchema = new Schema({
             bankName: { type: String, default: '' },
             accountNumber: { type: String, default: '' }
         },
+        secretCode: { type: String },
+        nin: { type: String },
+        bvn: { type: String },
+        name: { type: String },
         claimedAt: { type: Date },
     },
 }, {

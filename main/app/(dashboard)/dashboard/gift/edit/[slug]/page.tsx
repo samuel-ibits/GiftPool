@@ -12,6 +12,7 @@ type ExpectedParticipant = {
     secretCode?: string;
     choice?: string[];
     allowRepeat?: boolean;
+    private?: boolean;
 };
 
 type GiftBagItemDetails = {
@@ -82,6 +83,7 @@ export default function EditGiftPage() {
                         expectedParticipant: data.data.expectedParticipant || {
                             choice: ["name", "email"],
                             allowRepeat: false,
+                            private: false,
                         },
                     });
                 } else {
@@ -128,6 +130,8 @@ export default function EditGiftPage() {
     };
 
     const toggleVerificationField = (field: string) => {
+        if (field === "email") return; // Email is compulsory
+
         const currentChoice = formData.expectedParticipant?.choice || [];
         const newChoice = currentChoice.includes(field)
             ? currentChoice.filter(f => f !== field)
@@ -158,6 +162,26 @@ export default function EditGiftPage() {
             expectedParticipant: {
                 ...formData.expectedParticipant,
                 allowRepeat: !formData.expectedParticipant?.allowRepeat,
+            },
+        });
+    };
+
+    const togglePrivate = () => {
+        setFormData({
+            ...formData,
+            expectedParticipant: {
+                ...formData.expectedParticipant,
+                private: !formData.expectedParticipant?.private,
+            },
+        });
+    };
+
+    const updateExpectedValue = (field: string, value: string) => {
+        setFormData({
+            ...formData,
+            expectedParticipant: {
+                ...formData.expectedParticipant,
+                [field]: value.split(",").map(v => v.trim()),
             },
         });
     };
@@ -338,18 +362,21 @@ export default function EditGiftPage() {
                                             type="button"
                                             onClick={() => toggleVerificationField(option.value)}
                                             className={`p-4 rounded-lg border-2 text-left transition-all ${formData.expectedParticipant?.choice?.includes(option.value)
-                                                    ? "border-purple-500 bg-purple-50"
-                                                    : "border-gray-200 bg-white hover:border-purple-300"
-                                                }`}
+                                                ? "border-purple-500 bg-purple-50"
+                                                : "border-gray-200 bg-white hover:border-purple-300"
+                                                } ${option.value === "email" ? "opacity-75 cursor-not-allowed" : ""}`}
                                         >
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
-                                                    <p className="font-medium text-gray-800">{option.label}</p>
+                                                    <p className="font-medium text-gray-800">
+                                                        {option.label}
+                                                        {option.value === "email" && <span className="ml-2 text-xs text-purple-600 font-bold">(Required)</span>}
+                                                    </p>
                                                     <p className="text-xs text-gray-600 mt-1">{option.description}</p>
                                                 </div>
                                                 <div className={`w-5 h-5 rounded flex items-center justify-center ${formData.expectedParticipant?.choice?.includes(option.value)
-                                                        ? "bg-purple-600"
-                                                        : "bg-gray-200"
+                                                    ? "bg-purple-600"
+                                                    : "bg-gray-200"
                                                     }`}>
                                                     {formData.expectedParticipant?.choice?.includes(option.value) && (
                                                         <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -364,62 +391,64 @@ export default function EditGiftPage() {
                             </div>
 
                             {/* Security Values (Optional) */}
-                            <div className="border-t pt-6">
-                                <h3 className="mb-4 text-lg font-medium text-gray-700">
-                                    Security Values (Optional)
-                                </h3>
-                                <p className="mb-4 text-sm text-gray-600">
-                                    If you want to verify against specific values, enter them here
-                                </p>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {formData.expectedParticipant?.choice?.includes("nin") && (
-                                        <div>
-                                            <label className="mb-2 block text-sm font-medium text-gray-700">
-                                                Expected NIN
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={formData.expectedParticipant?.nin || ""}
-                                                onChange={(e) => updateSecurityField("nin", e.target.value)}
-                                                maxLength={11}
-                                                className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
-                                                placeholder="11-digit NIN"
-                                            />
-                                        </div>
-                                    )}
+                            {!formData.expectedParticipant?.private && (
+                                <div className="border-t pt-6">
+                                    <h3 className="mb-4 text-lg font-medium text-gray-700">
+                                        Security Values (Optional)
+                                    </h3>
+                                    <p className="mb-4 text-sm text-gray-600">
+                                        If you want to verify against specific values, enter them here
+                                    </p>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {formData.expectedParticipant?.choice?.includes("nin") && (
+                                            <div>
+                                                <label className="mb-2 block text-sm font-medium text-gray-700">
+                                                    Expected NIN
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={formData.expectedParticipant?.nin || ""}
+                                                    onChange={(e) => updateSecurityField("nin", e.target.value)}
+                                                    maxLength={11}
+                                                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
+                                                    placeholder="11-digit NIN"
+                                                />
+                                            </div>
+                                        )}
 
-                                    {formData.expectedParticipant?.choice?.includes("bvn") && (
-                                        <div>
-                                            <label className="mb-2 block text-sm font-medium text-gray-700">
-                                                Expected BVN
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={formData.expectedParticipant?.bvn || ""}
-                                                onChange={(e) => updateSecurityField("bvn", e.target.value)}
-                                                maxLength={11}
-                                                className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
-                                                placeholder="11-digit BVN"
-                                            />
-                                        </div>
-                                    )}
+                                        {formData.expectedParticipant?.choice?.includes("bvn") && (
+                                            <div>
+                                                <label className="mb-2 block text-sm font-medium text-gray-700">
+                                                    Expected BVN
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={formData.expectedParticipant?.bvn || ""}
+                                                    onChange={(e) => updateSecurityField("bvn", e.target.value)}
+                                                    maxLength={11}
+                                                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
+                                                    placeholder="11-digit BVN"
+                                                />
+                                            </div>
+                                        )}
 
-                                    {formData.expectedParticipant?.choice?.includes("secretCode") && (
-                                        <div>
-                                            <label className="mb-2 block text-sm font-medium text-gray-700">
-                                                Secret Code
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={formData.expectedParticipant?.secretCode || ""}
-                                                onChange={(e) => updateSecurityField("secretCode", e.target.value)}
-                                                className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
-                                                placeholder="Enter secret code"
-                                            />
-                                        </div>
-                                    )}
+                                        {formData.expectedParticipant?.choice?.includes("secretCode") && (
+                                            <div>
+                                                <label className="mb-2 block text-sm font-medium text-gray-700">
+                                                    Secret Code
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={formData.expectedParticipant?.secretCode || ""}
+                                                    onChange={(e) => updateSecurityField("secretCode", e.target.value)}
+                                                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200"
+                                                    placeholder="Enter secret code"
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             {/* Allow Repeat Claims */}
                             <div className="border-t pt-6">
@@ -441,6 +470,48 @@ export default function EditGiftPage() {
                                     </div>
                                 </button>
                             </div>
+
+                            {/* Private Gift */}
+                            <div className="border-t pt-6">
+                                <button
+                                    type="button"
+                                    onClick={togglePrivate}
+                                    className="flex items-center justify-between w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-300 transition-all"
+                                >
+                                    <div className="text-left">
+                                        <p className="font-medium text-gray-800">Private Gift</p>
+                                        <p className="text-sm text-gray-600 mt-1">
+                                            Only allow specific participants to claim (enter values separated by comma)
+                                        </p>
+                                    </div>
+                                    <div className={`relative w-14 h-7 rounded-full transition-colors ${formData.expectedParticipant?.private ? "bg-purple-600" : "bg-gray-300"
+                                        }`}>
+                                        <div className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${formData.expectedParticipant?.private ? "translate-x-7" : ""
+                                            }`}></div>
+                                    </div>
+                                </button>
+
+                                {formData.expectedParticipant?.private && (
+                                    <div className="mt-4 space-y-4 p-4 bg-purple-50 rounded-lg border border-purple-100">
+                                        {formData.expectedParticipant?.choice?.map((choice) => (
+                                            <div key={choice}>
+                                                <label className="mb-2 block text-sm font-medium text-gray-700 capitalize">
+                                                    Expected {choice === "nin" ? "NIN" : choice === "bvn" ? "BVN" : choice}s
+                                                </label>
+                                                <textarea
+                                                    rows={3}
+                                                    value={Array.isArray(formData.expectedParticipant?.[choice as keyof ExpectedParticipant])
+                                                        ? (formData.expectedParticipant?.[choice as keyof ExpectedParticipant] as string[]).join(", ")
+                                                        : ""}
+                                                    onChange={(e) => updateExpectedValue(choice, e.target.value)}
+                                                    className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-200 text-sm"
+                                                    placeholder={`Enter allowed ${choice}s separated by comma`}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
 
@@ -459,8 +530,8 @@ export default function EditGiftPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {/* Airtime */}
                                 <div className={`p-5 rounded-xl border-2 transition-all ${formData.giftBag?.airtime?.enabled
-                                        ? "border-green-400 bg-green-50"
-                                        : "border-gray-200 bg-gray-50"
+                                    ? "border-green-400 bg-green-50"
+                                    : "border-gray-200 bg-gray-50"
                                     }`}>
                                     <div className="flex items-center justify-between mb-3">
                                         <div className="flex items-center gap-2">
@@ -513,8 +584,8 @@ export default function EditGiftPage() {
 
                                 {/* Data */}
                                 <div className={`p-5 rounded-xl border-2 transition-all ${formData.giftBag?.data?.enabled
-                                        ? "border-green-400 bg-green-50"
-                                        : "border-gray-200 bg-gray-50"
+                                    ? "border-green-400 bg-green-50"
+                                    : "border-gray-200 bg-gray-50"
                                     }`}>
                                     <div className="flex items-center justify-between mb-3">
                                         <div className="flex items-center gap-2">
@@ -567,8 +638,8 @@ export default function EditGiftPage() {
 
                                 {/* Gift Card */}
                                 <div className={`p-5 rounded-xl border-2 transition-all ${formData.giftBag?.giftCard?.enabled
-                                        ? "border-green-400 bg-green-50"
-                                        : "border-gray-200 bg-gray-50"
+                                    ? "border-green-400 bg-green-50"
+                                    : "border-gray-200 bg-gray-50"
                                     }`}>
                                     <div className="flex items-center justify-between mb-3">
                                         <div className="flex items-center gap-2">
@@ -621,8 +692,8 @@ export default function EditGiftPage() {
 
                                 {/* Bank Transfer */}
                                 <div className={`p-5 rounded-xl border-2 transition-all ${formData.giftBag?.bank?.enabled
-                                        ? "border-green-400 bg-green-50"
-                                        : "border-gray-200 bg-gray-50"
+                                    ? "border-green-400 bg-green-50"
+                                    : "border-gray-200 bg-gray-50"
                                     }`}>
                                     <div className="flex items-center justify-between mb-3">
                                         <div className="flex items-center gap-2">
@@ -727,8 +798,8 @@ export default function EditGiftPage() {
                             {saving ? "Saving..." : "Save Changes"}
                         </button>
                     </div>
-                </div>
-            </div>
-        </div>
+                </div >
+            </div >
+        </div >
     );
 }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Gift, Share2, Lock } from "lucide-react";
+// import { toast } from "sonner"; // If you have sonner/toast, otherwise we'll stick to state error
 
 interface GiftData {
   giftBag: any;
@@ -29,6 +30,12 @@ interface ClaimData {
   wallet: string;
   accountNumber: string;
   bankName: string;
+  secretCode: string;
+  email: string;
+  nin: string;
+  bvn: string;
+  name: string;
+  bank: string;
 }
 
 interface VerificationData {
@@ -60,10 +67,40 @@ export default function ParticipatePage() {
     wallet: "",
     accountNumber: "",
     bankName: "",
+    secretCode: "",
+    email: "",
+    nin: "",
+    bvn: "",
+    name: "",
+    bank: ""
+
   });
+  const [giftConfig, setGiftConfig] = useState<GiftData | null>(null); // Store initial public config
   const [selectedOption, setSelectedOption] = useState<
     "airtime" | "bank" | "giftCard" | null
   >(null);
+
+  // Fetch gift configuration on mount
+  useEffect(() => {
+    const fetchGiftConfig = async () => {
+      try {
+        const res = await fetch(`/api/gift/details/${slug}`);
+        if (!res.ok) throw new Error("Failed to load gift details");
+        const data = await res.json();
+        if (data.success && data.data) {
+          setGiftConfig(data.data);
+          setGift(data.data);
+        }
+      } catch (err) {
+        console.error("Error fetching gift details:", err);
+        setError("Could not load gift details. Please try again.");
+      }
+    };
+
+    if (slug) {
+      fetchGiftConfig();
+    }
+  }, [slug]);
 
   useEffect(() => {
     if (gift) {
@@ -97,10 +134,15 @@ export default function ParticipatePage() {
   };
 
   const getRequiredFields = () => {
-    if (!gift?.expectedParticipant?.choice) {
-      return ["name", "email"];
+    console.log(gift);
+    console.log(giftConfig);
+    if (gift?.expectedParticipant?.choice) {
+      return gift.expectedParticipant.choice;
     }
-    return gift.expectedParticipant.choice;
+    if (giftConfig?.expectedParticipant?.choice) {
+      return giftConfig.expectedParticipant.choice;
+    }
+    return ["name", "email"];
   };
 
   const validateField = (field: string, value: string) => {
@@ -163,11 +205,12 @@ export default function ParticipatePage() {
         headers: { "Content-Type": "application/json" },
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
+        throw new Error(data.error || data.message || "Verification failed");
       }
 
-      const data = await res.json();
       if (data?.data?.gift) {
         setGift(data.data.gift);
         setStep("reveal");
@@ -176,9 +219,9 @@ export default function ParticipatePage() {
           "No gift found or verification failed. Please check your details.",
         );
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Lookup error:", err);
-      setError("Error checking for gift. Please try again.");
+      setError(err.message || "Error checking for gift. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -197,6 +240,12 @@ export default function ParticipatePage() {
           accountNumber: claim.accountNumber.trim(),
           bankName: claim.bankName.trim(),
         },
+        secretCode: claim.secretCode.trim(),
+        email: claim.email.trim(),
+        nin: claim.nin.trim(),
+        bvn: claim.bvn.trim(),
+        name: claim.name.trim(),
+
       };
 
       // Include verification data
@@ -212,20 +261,18 @@ export default function ParticipatePage() {
       });
 
       if (!res.ok) {
-        const errorData = await res.json().catch((e) => (console.log(e)));
+        const errorData = await res.json().catch((e) => ({}));
         throw new Error(
-          errorData.message || `HTTP error! status: ${res.status}`,
+          errorData.error || errorData.message || `HTTP error! status: ${res.status}`,
         );
       }
 
       const data = await res.json();
       setStep("done");
-    } catch (err) {
+    } catch (err: any) {
       console.error("Claim submission error:", err);
       setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to submit claim. Please try again.",
+        err.message || "Failed to submit claim. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -268,6 +315,12 @@ export default function ParticipatePage() {
       wallet: "",
       accountNumber: "",
       bankName: "",
+      secretCode: "",
+      email: "",
+      nin: "",
+      bvn: "",
+      name: "",
+      bank: ""
     });
   };
 

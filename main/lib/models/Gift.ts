@@ -72,16 +72,17 @@ const giftSchema = new Schema(
             allowParticipantPick: { type: Boolean, default: false },
         },
         expectedParticipant: {
-            name: { type: String },
-            email: { type: String },
-            nin: { type: String },
-            bvn: { type: String },
-            secretCode: { type: String },
+            name: [{ type: String }],
+            email: [{ type: String }],
+            nin: [{ type: String }],
+            bvn: [{ type: String }],
+            secretCode: [{ type: String }],
             choice: {
                 type: [{ type: String, enum: ["name", "email", "nin", "bvn", "secretCode"] }],
                 default: ["name", "email"],
             },
             allowRepeat: { type: Boolean, default: false },
+            private: { type: Boolean, default: false },
         },
     },
     { timestamps: true }

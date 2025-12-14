@@ -48,6 +48,12 @@ export async function PUT(
 
         allowedFields.forEach((field) => {
             if (body[field] !== undefined) {
+                if (field === 'expectedParticipant' && body.expectedParticipant?.choice) {
+                    // Ensure email is always present in choice
+                    const choices = new Set(body.expectedParticipant.choice);
+                    choices.add('email');
+                    body.expectedParticipant.choice = Array.from(choices);
+                }
                 gift[field] = body[field];
             }
         });
