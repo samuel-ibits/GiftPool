@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRef } from "react";
 import { useParams } from "next/navigation";
 import { Gift, Share2, Lock } from "lucide-react";
+import html2canvas from "html2canvas";
 // import { toast } from "sonner"; // If you have sonner/toast, otherwise we'll stick to state error
 
 interface GiftData {
@@ -279,22 +281,74 @@ export default function ParticipatePage() {
     }
   };
 
-  const handleShare = async () => {
-    const shareData = {
-      title: "I received a gift!",
-      text: `I just claimed my gift: ${gift?.title}! Check if you have one too.`,
-      url: window.location.href,
-    };
+  const cardRef = useRef<HTMLDivElement>(null);
 
+  const handleShare = async () => {
+    if (!cardRef.current || !gift) return;
+
+    setLoading(true);
     try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
+      // Small delay to ensure rendering
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      const canvas = await html2canvas(cardRef.current, {
+        useCORS: true,
+        backgroundColor: null,
+        scale: 2
+      });
+
+      canvas.toBlob(async (blob) => {
+        if (!blob) throw new Error("Failed to generate image");
+
+        const file = new File([blob], `gift-${gift.title}.png`, { type: "image/png" });
+        const shareData = {
+          title: "I received a gift!",
+          text: `I just claimed my gift: ${gift.title}! Check if you have one too.`,
+          url: window.location.href,
+          files: [file]
+        };
+
+        if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+          try {
+            await navigator.share(shareData);
+          } catch (err) {
+            console.warn("Share failed or cancelled:", err);
+            // Fallback to text share if file share fails
+            await navigator.share({
+              title: shareData.title,
+              text: shareData.text,
+              url: shareData.url
+            });
+          }
+        } else {
+          // Download fallback
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `gift-${gift.title}.png`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          alert("Image saved! You can now share it manually.");
+        }
+      }, "image/png");
+
+    } catch (err) {
+      console.error("Error generating share card:", err);
+      // Fallback to basic text share
+      try {
+        await navigator.share({
+          title: "I received a gift!",
+          text: `I just claimed my gift: ${gift?.title}! Check if you have one too.`,
+          url: window.location.href,
+        });
+      } catch (e) {
         await navigator.clipboard.writeText(window.location.href);
         alert("Link copied to clipboard!");
       }
-    } catch (err) {
-      console.error("Error sharing:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -643,14 +697,32 @@ export default function ParticipatePage() {
               </button>
 
               <button
+                onClick={() => window.location.href = "/signup"}
+                className="w-full rounded-lg bg-gradient-to-r from-pink-500 to-rose-500 px-6 py-3 text-white font-semibold transition-all duration-200 hover:shadow-lg hover:scale-105"
+              >
+                Create Your Own Giveaway
+              </button>
+
+              <button
                 onClick={resetForm}
                 className="w-full rounded-lg border-2 border-gray-300 px-6 py-3 text-gray-700 font-semibold transition-colors duration-200 hover:bg-gray-50"
               >
                 Submit Another Claim
               </button>
             </div>
+
+
           </div>
         )}
+        {/* Privacy Assurance */}
+
+        <div className="mt-8 flex items-center justify-center gap-2 text-sm text-gray-500">
+          <Lock className="w-4 h-4 text-green-500" />
+          <span>Your data is safe with us.</span>
+          <a href="/privacy" target="_blank" className="font-medium text-purple-600 hover:underline">
+            Learn more
+          </a>
+        </div>
       </div>
 
       <style jsx>{`
@@ -668,6 +740,62 @@ export default function ParticipatePage() {
           animation: fadeIn 0.5s ease-out;
         }
       `}</style>
-    </div>
+      {/* Hidden Gift Card for Sharing */}
+      <div
+        style={{
+          position: "absolute",
+          top: "-9999px",
+          left: "-9999px",
+          width: "400px",
+          // height: "600px" // Auto height
+        }}
+      >
+        <div
+          ref={cardRef}
+          className="bg-gradient-to-br from-purple-600 to-pink-600 p-8 rounded-3xl text-white flex flex-col items-center justify-center text-center shadow-2xl relative overflow-hidden"
+          style={{ width: "400px", minHeight: "600px" }}
+        >
+          {/* Decorative Elements */}
+          <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
+            <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+            <div className="absolute bottom-10 right-10 w-32 h-32 bg-purple-500/30 rounded-full blur-xl"></div>
+          </div>
+
+          <div className="relative z-10 flex flex-col items-center w-full h-full justify-between py-10">
+            <div>
+              <div className="bg-white/20 backdrop-blur-md px-6 py-2 rounded-full mb-8 inline-block">
+                <span className="font-bold text-lg tracking-wide">🎉 CONGRATULATIONS!</span>
+              </div>
+
+              <div className="w-48 h-48 bg-white/10 rounded-2xl flex items-center justify-center mb-8 border border-white/20 shadow-inner p-4">
+                {gift?.imageUrl ? (
+                  <img
+                    src={gift.imageUrl}
+                    alt={gift.title}
+                    className="w-full h-full object-contain drop-shadow-lg"
+                    crossOrigin="anonymous" // Important for CORS
+                  />
+                ) : (
+                  <Gift className="w-24 h-24 text-white/90" />
+                )}
+              </div>
+
+              <h1 className="text-3xl font-bold mb-4 px-4 leading-tight">
+                {gift?.title || "A Special Gift"}
+              </h1>
+
+              <p className="text-purple-100 px-6 text-lg line-clamp-3">
+                {gift?.description || "Someone sent you a wonderful surprise!"}
+              </p>
+            </div>
+
+            <div className="mt-12 text-center w-full">
+              <p className="text-white/80 text-sm mb-2 font-medium">Claimed via</p>
+              <div className="text-2xl font-black tracking-tighter">GiftPool</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div >
   );
 }
